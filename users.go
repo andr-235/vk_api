@@ -254,10 +254,31 @@ type UsersGetParams struct {
 	FromGroupID int      `url:"from_group_id,omitempty"`
 }
 
+type UsersGetFollowersParams struct {
+	UserID   int      `url:"user_id,omitempty"`
+	Offset   int      `url:"offset,omitempty"`
+	Count    int      `url:"count,omitempty"`
+	Fields   []string `url:"fields,comma,omitempty"`
+	NameCase string   `url:"name_case,omitempty"`
+}
+
+type UsersGetFollowersResponse struct {
+	Count int    `json:"count"`
+	Items []User `json:"items"`
+}
+
 func (c *Client) UsersGet(ctx context.Context, params UsersGetParams) ([]User, error) {
 	var out []User
 	if err := c.Call(ctx, "users.get", params, &out); err != nil {
 		return nil, err
 	}
 	return out, nil
+}
+
+func (c *Client) UsersGetFollowers(ctx context.Context, params UsersGetFollowersParams) (*UsersGetFollowersResponse, error) {
+	var out UsersGetFollowersResponse
+	if err := c.Call(ctx, "users.getFollowers", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
