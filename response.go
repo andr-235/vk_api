@@ -9,9 +9,12 @@ type responseEnvelope struct {
 
 type apiError struct {
 	Code          int            `json:"error_code"`
-	Messages      string         `json:"error_msg"`
-	RequestParams []RequestParam `json:"request_params"`
-	CaptchaSID    string         `json:"captha_sid"`
-	CaptchaImg    string         `json:"captha_img"`
-	RedirectURI   string         `json:"redirect_url"`
+	Message       string         `json:"error_msg"`
+	RequestParams []RequestParam `json:"request_params,omitempty"`
+
+	CaptchaSID  string `json:"captcha_sid,omitempty"`
+	CaptchaImg  string `json:"captcha_img,omitempty"`
+	RedirectURI string `json:"redirect_uri,omitempty"`
+
+	ConfirmationText string `json:"confirmation_text,omitempty"`
 }

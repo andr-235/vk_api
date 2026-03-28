@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	internalencode "github.com/andr-235/vk/internal/encode"
+	internalencode "github.com/andr-235/vk-api/internal/encode"
 )
 
 func (c *Client) Call(ctx context.Context, method string, params any, out any) error {
@@ -22,23 +22,40 @@ func (c *Client) Call(ctx context.Context, method string, params any, out any) e
 		return fmt.Errorf("vk: encode params: %w", err)
 	}
 
-	if c.token != "" {
-		values.Set("access_token", c.token)
+	if c.version == "" {
+		return fmt.Errorf("vk: api version is required")
 	}
-	if c.version != "" {
-		values.Set("v", c.version)
-	}
+
+	values.Set("v", c.version)
+
 	if c.lang != "" {
 		values.Set("lang", c.lang)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewBufferString(values.Encode()))
+	if c.testMode {
+		values.Set("test_mode", "1")
+	}
+
+	if c.token != "" && c.tokenSource == TokenInParams {
+		values.Set("access_token", c.token)
+	}
+
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		endpoint,
+		bytes.NewBufferString(values.Encode()),
+	)
 	if err != nil {
 		return fmt.Errorf("vk: build request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
+
+	if c.token != "" && c.tokenSource == TokenInHeader {
+		req.Header.Set("Authorization", "Bearer "+c.token)
+	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

@@ -4,6 +4,13 @@ import "net/http"
 
 type Option func(*Client)
 
+type TokenSource int
+
+const (
+	TokenInParams TokenSource = iota
+	TokenInHeader
+)
+
 func WithToken(token string) Option {
 	return func(c *Client) {
 		c.token = token
@@ -22,6 +29,12 @@ func WithLang(lang string) Option {
 	}
 }
 
+func WithTestMode(enabled bool) Option {
+	return func(c *Client) {
+		c.testMode = enabled
+	}
+}
+
 func WithBaseURL(baseURL string) Option {
 	return func(c *Client) {
 		c.baseURL = baseURL
@@ -31,5 +44,11 @@ func WithBaseURL(baseURL string) Option {
 func WithHTTPClient(hc *http.Client) Option {
 	return func(c *Client) {
 		c.httpClient = hc
+	}
+}
+
+func WithTokenSource(src TokenSource) Option {
+	return func(c *Client) {
+		c.tokenSource = src
 	}
 }
