@@ -267,6 +267,36 @@ type UsersGetFollowersResponse struct {
 	Items []User `json:"items"`
 }
 
+type UsersGetSubscriptionsParams struct {
+	UserID   int      `url:"user_id,omitempty"`
+	Extended bool     `url:"extended,omitempty"`
+	Offset   int      `url:"offset,omitempty"`
+	Count    int      `url:"count,omitempty"`
+	Fields   []string `url:"fields,comma,omitempty"`
+}
+
+type SubscriptionIDs struct {
+	Count int   `json:"count"`
+	Items []int `json:"items"`
+}
+
+type UsersGetSubscriptionsResponse struct {
+	Users  SubscriptionIDs `json:"users"`
+	Groups SubscriptionIDs `json:"groups"`
+}
+
+type UsersGetSubscriptionsExtendedResponse struct {
+	Count int                `json:"count"`
+	Items []SubscriptionItem `json:"items"`
+}
+
+type SubscriptionItem struct {
+	Type string `json:"type,omitempty"`
+
+	User
+	Group
+}
+
 func (c *Client) UsersGet(ctx context.Context, params UsersGetParams) ([]User, error) {
 	var out []User
 	if err := c.Call(ctx, "users.get", params, &out); err != nil {
@@ -278,6 +308,26 @@ func (c *Client) UsersGet(ctx context.Context, params UsersGetParams) ([]User, e
 func (c *Client) UsersGetFollowers(ctx context.Context, params UsersGetFollowersParams) (*UsersGetFollowersResponse, error) {
 	var out UsersGetFollowersResponse
 	if err := c.Call(ctx, "users.getFollowers", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *Client) UsersGetSubscriptions(ctx context.Context, params UsersGetSubscriptionsParams) (*UsersGetSubscriptionsResponse, error) {
+	params.Extended = false
+
+	var out UsersGetSubscriptionsResponse
+	if err := c.Call(ctx, "users.getSubscriptions", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *Client) UsersGetSubscriptionsExtended(ctx context.Context, params UsersGetSubscriptionsParams) (*UsersGetSubscriptionsExtendedResponse, error) {
+	params.Extended = true
+
+	var out UsersGetSubscriptionsExtendedResponse
+	if err := c.Call(ctx, "users.getSubscriptions", params, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil
