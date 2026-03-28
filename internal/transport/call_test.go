@@ -1,4 +1,4 @@
-package vk
+package transport
 
 import (
 	"context"
