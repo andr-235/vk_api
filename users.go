@@ -292,14 +292,32 @@ type UsersGetSubscriptionsExtendedResponse struct {
 
 type SubscriptionItem struct {
 	Type string `json:"type,omitempty"`
+	ID   int    `json:"id"`
 
-	User
-	Group
+	// user fields
+	FirstName       string `json:"first_name,omitempty"`
+	LastName        string `json:"last_name,omitempty"`
+	CanAccessClosed bool   `json:"can_access_closed,omitempty"`
+	IsClosed        bool   `json:"is_closed,omitempty"`
+
+	// common / group fields
+	Name       string `json:"name,omitempty"`
+	ScreenName string `json:"screen_name,omitempty"`
+
+	// optional fields
+	Photo50  string `json:"photo_50,omitempty"`
+	Photo100 string `json:"photo_100,omitempty"`
+
+	// group-specific
+	IsAdmin      int `json:"is_admin,omitempty"`
+	IsMember     int `json:"is_member,omitempty"`
+	IsAdvertiser int `json:"is_advertiser,omitempty"`
+	MembersCount int `json:"members_count,omitempty"`
 }
 
 type UsersSearchParams struct {
 	Q                 string   `url:"q,omitempty"`
-	Sort              int      `url:"sort,omitempty"`
+	Sort              int      `url:"sort"`
 	Offset            int      `url:"offset,omitempty"`
 	Count             int      `url:"count,omitempty"`
 	Fields            []string `url:"fields,comma,omitempty"`

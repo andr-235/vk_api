@@ -23,7 +23,9 @@ func TestGroupsGetByID(t *testing.T) {
 					"id": 1,
 					"name": "VK Test Group",
 					"screen_name": "vk_test",
-					"type": "group"
+					"type": "group",
+					"is_closed": 0,
+					"members_count": 1000
 				}
 			]
 		}`))
@@ -34,7 +36,7 @@ func TestGroupsGetByID(t *testing.T) {
 
 	groups, err := c.GroupsGetByID(context.Background(), GroupsGetByIDParams{
 		GroupIDs: []string{"vk_test"},
-		Fields:   []string{"screen_name"},
+		Fields:   []string{"members_count"},
 	})
 	if err != nil {
 		t.Fatalf("GroupsGetByID() error = %v", err)
@@ -46,13 +48,17 @@ func TestGroupsGetByID(t *testing.T) {
 	if gotForm.Get("group_ids") != "vk_test" {
 		t.Fatalf("unexpected group_ids: %q", gotForm.Get("group_ids"))
 	}
-	if gotForm.Get("fields") != "screen_name" {
+	if gotForm.Get("fields") != "members_count" {
 		t.Fatalf("unexpected fields: %q", gotForm.Get("fields"))
 	}
+
 	if len(groups) != 1 {
 		t.Fatalf("unexpected groups len: %d", len(groups))
 	}
-	if groups[0].ScreenName != "vk_test" {
-		t.Fatalf("unexpected screen_name: %q", groups[0].ScreenName)
+	if groups[0].Name != "VK Test Group" {
+		t.Fatalf("unexpected name: %q", groups[0].Name)
+	}
+	if groups[0].MembersCount != 1000 {
+		t.Fatalf("unexpected members_count: %d", groups[0].MembersCount)
 	}
 }
