@@ -2,7 +2,6 @@ package vk
 
 import (
 	"context"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -15,16 +14,7 @@ func TestUsersGet(t *testing.T) {
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
-
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			t.Fatalf("read body: %v", err)
-		}
-
-		gotForm, err = url.ParseQuery(string(body))
-		if err != nil {
-			t.Fatalf("parse body: %v", err)
-		}
+		gotForm = r.URL.Query()
 
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{

@@ -1,7 +1,6 @@
 package vk
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -43,14 +42,13 @@ func (c *Client) Call(ctx context.Context, method string, params any, out any) e
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
-		endpoint,
-		bytes.NewBufferString(values.Encode()),
+		endpoint+"?"+values.Encode(),
+		nil,
 	)
 	if err != nil {
 		return fmt.Errorf("vk: build request: %w", err)
 	}
 
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
 
 	if c.token != "" && c.tokenSource == TokenInHeader {
