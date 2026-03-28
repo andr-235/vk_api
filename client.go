@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/andr-235/vk_api/internal/transport"
 )
 
 const (
@@ -58,4 +60,21 @@ func (c *Client) endpoint(method string) (string, error) {
 		return "", errors.New("vk: method is required")
 	}
 	return fmt.Sprintf("%s%s", c.baseURL, method), nil
+}
+
+func (c *Client) transportConfig() transport.Config {
+	tokenSource := transport.TokenInParams
+	if c.tokenSource == TokenInHeader {
+		tokenSource = transport.TokenInHeader
+	}
+
+	return transport.Config{
+		BaseURL:     c.baseURL,
+		Version:     c.version,
+		Lang:        c.lang,
+		TestMode:    c.testMode,
+		Token:       c.token,
+		TokenSource: tokenSource,
+		HTTPClient:  c.httpClient,
+	}
 }

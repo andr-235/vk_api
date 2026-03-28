@@ -1,9 +1,6 @@
-package vk
-
-import "context"
+package users
 
 type User struct {
-	// Базовые поля
 	ID              int    `json:"id"`
 	FirstName       string `json:"first_name"`
 	LastName        string `json:"last_name"`
@@ -11,7 +8,6 @@ type User struct {
 	IsClosed        bool   `json:"is_closed,omitempty"`
 	CanAccessClosed bool   `json:"can_access_closed,omitempty"`
 
-	// A-I
 	About                  string           `json:"about,omitempty"`
 	Activities             string           `json:"activities,omitempty"`
 	BDate                  string           `json:"bdate,omitempty"`
@@ -53,7 +49,6 @@ type User struct {
 	IsNoIndex              int              `json:"is_no_index,omitempty"`
 	IsVerified             bool             `json:"is_verified,omitempty"`
 
-	// L-R
 	LastNameNom     string               `json:"last_name_nom,omitempty"`
 	LastNameGen     string               `json:"last_name_gen,omitempty"`
 	LastNameDat     string               `json:"last_name_dat,omitempty"`
@@ -85,7 +80,6 @@ type User struct {
 	Relation        int                  `json:"relation,omitempty"`
 	RelationPartner *UserRelationPartner `json:"relation_partner,omitempty"`
 
-	// S-W
 	Schools      []UserSchool     `json:"schools,omitempty"`
 	ScreenName   string           `json:"screen_name,omitempty"`
 	Sex          int              `json:"sex,omitempty"`
@@ -245,160 +239,4 @@ type UserUniversity struct {
 	Graduation      int    `json:"graduation,omitempty"`
 	EducationForm   string `json:"education_form,omitempty"`
 	EducationStatus string `json:"education_status,omitempty"`
-}
-
-type UsersGetParams struct {
-	UserIDs     []string `url:"user_ids,comma,omitempty"`
-	Fields      []string `url:"fields,comma,omitempty"`
-	NameCase    string   `url:"name_case,omitempty"`
-	FromGroupID int      `url:"from_group_id,omitempty"`
-}
-
-type UsersGetFollowersParams struct {
-	UserID   int      `url:"user_id,omitempty"`
-	Offset   int      `url:"offset,omitempty"`
-	Count    int      `url:"count,omitempty"`
-	Fields   []string `url:"fields,comma,omitempty"`
-	NameCase string   `url:"name_case,omitempty"`
-}
-
-type UsersGetFollowersResponse struct {
-	Count int    `json:"count"`
-	Items []User `json:"items"`
-}
-
-type UsersGetSubscriptionsParams struct {
-	UserID   int      `url:"user_id,omitempty"`
-	Extended bool     `url:"extended,omitempty"`
-	Offset   int      `url:"offset,omitempty"`
-	Count    int      `url:"count,omitempty"`
-	Fields   []string `url:"fields,comma,omitempty"`
-}
-
-type SubscriptionIDs struct {
-	Count int   `json:"count"`
-	Items []int `json:"items"`
-}
-
-type UsersGetSubscriptionsResponse struct {
-	Users  SubscriptionIDs `json:"users"`
-	Groups SubscriptionIDs `json:"groups"`
-}
-
-type UsersGetSubscriptionsExtendedResponse struct {
-	Count int                `json:"count"`
-	Items []SubscriptionItem `json:"items"`
-}
-
-type SubscriptionItem struct {
-	Type string `json:"type,omitempty"`
-	ID   int    `json:"id"`
-
-	// user fields
-	FirstName       string `json:"first_name,omitempty"`
-	LastName        string `json:"last_name,omitempty"`
-	CanAccessClosed bool   `json:"can_access_closed,omitempty"`
-	IsClosed        bool   `json:"is_closed,omitempty"`
-
-	// common / group fields
-	Name       string `json:"name,omitempty"`
-	ScreenName string `json:"screen_name,omitempty"`
-
-	// optional fields
-	Photo50  string `json:"photo_50,omitempty"`
-	Photo100 string `json:"photo_100,omitempty"`
-
-	// group-specific
-	IsAdmin      int `json:"is_admin,omitempty"`
-	IsMember     int `json:"is_member,omitempty"`
-	IsAdvertiser int `json:"is_advertiser,omitempty"`
-	MembersCount int `json:"members_count,omitempty"`
-}
-
-type UsersSearchParams struct {
-	Q                 string   `url:"q,omitempty"`
-	Sort              int      `url:"sort"`
-	Offset            int      `url:"offset,omitempty"`
-	Count             int      `url:"count,omitempty"`
-	Fields            []string `url:"fields,comma,omitempty"`
-	City              int      `url:"city,omitempty"`
-	CityID            int      `url:"city_id,omitempty"`
-	Country           int      `url:"country,omitempty"`
-	CountryID         int      `url:"country_id,omitempty"`
-	Hometown          string   `url:"hometown,omitempty"`
-	UniversityCountry int      `url:"university_country,omitempty"`
-	University        int      `url:"university,omitempty"`
-	UniversityYear    int      `url:"university_year,omitempty"`
-	UniversityFaculty int      `url:"university_faculty,omitempty"`
-	UniversityChair   int      `url:"university_chair,omitempty"`
-	Sex               int      `url:"sex,omitempty"`
-	Status            int      `url:"status,omitempty"`
-	AgeFrom           int      `url:"age_from,omitempty"`
-	AgeTo             int      `url:"age_to,omitempty"`
-	BirthDay          int      `url:"birth_day,omitempty"`
-	BirthMonth        int      `url:"birth_month,omitempty"`
-	BirthYear         int      `url:"birth_year,omitempty"`
-	Online            bool     `url:"online,omitempty"`
-	HasPhoto          bool     `url:"has_photo,omitempty"`
-	SchoolCountry     int      `url:"school_country,omitempty"`
-	SchoolCity        int      `url:"school_city,omitempty"`
-	SchoolClass       int      `url:"school_class,omitempty"`
-	School            int      `url:"school,omitempty"`
-	SchoolYear        int      `url:"school_year,omitempty"`
-	Religion          string   `url:"religion,omitempty"`
-	Company           string   `url:"company,omitempty"`
-	Position          string   `url:"position,omitempty"`
-	GroupID           int      `url:"group_id,omitempty"`
-	FromList          []string `url:"from_list,comma,omitempty"`
-	ScreenRef         string   `url:"screen_ref,omitempty"`
-	FromGroupID       int      `url:"from_group_id,omitempty"`
-}
-
-type UsersSearchResponse struct {
-	Count int    `json:"count"`
-	Items []User `json:"items"`
-}
-
-func (c *Client) UsersGet(ctx context.Context, params UsersGetParams) ([]User, error) {
-	var out []User
-	if err := c.Call(ctx, "users.get", params, &out); err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *Client) UsersGetFollowers(ctx context.Context, params UsersGetFollowersParams) (*UsersGetFollowersResponse, error) {
-	var out UsersGetFollowersResponse
-	if err := c.Call(ctx, "users.getFollowers", params, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *Client) UsersGetSubscriptions(ctx context.Context, params UsersGetSubscriptionsParams) (*UsersGetSubscriptionsResponse, error) {
-	params.Extended = false
-
-	var out UsersGetSubscriptionsResponse
-	if err := c.Call(ctx, "users.getSubscriptions", params, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *Client) UsersGetSubscriptionsExtended(ctx context.Context, params UsersGetSubscriptionsParams) (*UsersGetSubscriptionsExtendedResponse, error) {
-	params.Extended = true
-
-	var out UsersGetSubscriptionsExtendedResponse
-	if err := c.Call(ctx, "users.getSubscriptions", params, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *Client) UsersSearch(ctx context.Context, params UsersSearchParams) (*UsersSearchResponse, error) {
-	var out UsersSearchResponse
-	if err := c.Call(ctx, "users.search", params, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
 }

@@ -1,4 +1,4 @@
-package vk
+package users
 
 import (
 	"context"
@@ -6,9 +6,11 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	vk "github.com/andr-235/vk_api"
 )
 
-func TestUsersGet(t *testing.T) {
+func TestGet(t *testing.T) {
 	var gotPath string
 	var gotForm url.Values
 
@@ -32,14 +34,14 @@ func TestUsersGet(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := New(WithBaseURL(srv.URL))
+	client := vk.New(vk.WithBaseURL(srv.URL))
 
-	users, err := c.UsersGet(context.Background(), UsersGetParams{
+	users, err := Get(context.Background(), client, GetParams{
 		UserIDs: []string{"743784474"},
 		Fields:  []string{"bdate"},
 	})
 	if err != nil {
-		t.Fatalf("UsersGet() error = %v", err)
+		t.Fatalf("Get() error = %v", err)
 	}
 
 	if gotPath != "/users.get" {
@@ -68,7 +70,7 @@ func TestUsersGet(t *testing.T) {
 	}
 }
 
-func TestUsersGet_WithScreenName(t *testing.T) {
+func TestGet_WithScreenName(t *testing.T) {
 	var gotForm url.Values
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -90,14 +92,14 @@ func TestUsersGet_WithScreenName(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := New(WithBaseURL(srv.URL))
+	client := vk.New(vk.WithBaseURL(srv.URL))
 
-	users, err := c.UsersGet(context.Background(), UsersGetParams{
+	users, err := Get(context.Background(), client, GetParams{
 		UserIDs: []string{"durov"},
 		Fields:  []string{"screen_name"},
 	})
 	if err != nil {
-		t.Fatalf("UsersGet() error = %v", err)
+		t.Fatalf("Get() error = %v", err)
 	}
 
 	if gotForm.Get("user_ids") != "durov" {
@@ -114,7 +116,7 @@ func TestUsersGet_WithScreenName(t *testing.T) {
 	}
 }
 
-func TestUsersGetFollowers(t *testing.T) {
+func TestGetFollowers(t *testing.T) {
 	var gotPath string
 	var gotForm url.Values
 
@@ -149,9 +151,9 @@ func TestUsersGetFollowers(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := New(WithBaseURL(srv.URL))
+	client := vk.New(vk.WithBaseURL(srv.URL))
 
-	resp, err := c.UsersGetFollowers(context.Background(), UsersGetFollowersParams{
+	resp, err := GetFollowers(context.Background(), client, GetFollowersParams{
 		UserID:   1,
 		Offset:   5,
 		Count:    2,
@@ -159,7 +161,7 @@ func TestUsersGetFollowers(t *testing.T) {
 		NameCase: "nom",
 	})
 	if err != nil {
-		t.Fatalf("UsersGetFollowers() error = %v", err)
+		t.Fatalf("GetFollowers() error = %v", err)
 	}
 
 	if gotPath != "/users.getFollowers" {
@@ -201,7 +203,7 @@ func TestUsersGetFollowers(t *testing.T) {
 	}
 }
 
-func TestUsersGetSubscriptions(t *testing.T) {
+func TestGetSubscriptions(t *testing.T) {
 	var gotPath string
 	var gotForm url.Values
 
@@ -225,13 +227,13 @@ func TestUsersGetSubscriptions(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := New(WithBaseURL(srv.URL))
+	client := vk.New(vk.WithBaseURL(srv.URL))
 
-	resp, err := c.UsersGetSubscriptions(context.Background(), UsersGetSubscriptionsParams{
+	resp, err := GetSubscriptions(context.Background(), client, GetSubscriptionsParams{
 		UserID: 1,
 	})
 	if err != nil {
-		t.Fatalf("UsersGetSubscriptions() error = %v", err)
+		t.Fatalf("GetSubscriptions() error = %v", err)
 	}
 
 	if gotPath != "/users.getSubscriptions" {
@@ -264,7 +266,7 @@ func TestUsersGetSubscriptions(t *testing.T) {
 	}
 }
 
-func TestUsersGetSubscriptionsExtended(t *testing.T) {
+func TestGetSubscriptionsExtended(t *testing.T) {
 	var gotPath string
 	var gotForm url.Values
 
@@ -291,7 +293,8 @@ func TestUsersGetSubscriptionsExtended(t *testing.T) {
 						"id": 20,
 						"name": "VK Test Page",
 						"screen_name": "vk_test_page",
-						"type": "page"
+						"is_member": 1,
+						"members_count": 123
 					}
 				]
 			}
@@ -299,16 +302,16 @@ func TestUsersGetSubscriptionsExtended(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := New(WithBaseURL(srv.URL))
+	client := vk.New(vk.WithBaseURL(srv.URL))
 
-	resp, err := c.UsersGetSubscriptionsExtended(context.Background(), UsersGetSubscriptionsParams{
+	resp, err := GetSubscriptionsExtended(context.Background(), client, GetSubscriptionsParams{
 		UserID: 1,
 		Offset: 5,
 		Count:  2,
 		Fields: []string{"screen_name"},
 	})
 	if err != nil {
-		t.Fatalf("UsersGetSubscriptionsExtended() error = %v", err)
+		t.Fatalf("GetSubscriptionsExtended() error = %v", err)
 	}
 
 	if gotPath != "/users.getSubscriptions" {
@@ -345,9 +348,12 @@ func TestUsersGetSubscriptionsExtended(t *testing.T) {
 	if resp.Items[1].Name != "VK Test Page" {
 		t.Fatalf("unexpected second item name: %q", resp.Items[1].Name)
 	}
+	if resp.Items[1].MembersCount != 123 {
+		t.Fatalf("unexpected second item members_count: %d", resp.Items[1].MembersCount)
+	}
 }
 
-func TestUsersSearch(t *testing.T) {
+func TestSearch(t *testing.T) {
 	var gotPath string
 	var gotForm url.Values
 
@@ -383,9 +389,9 @@ func TestUsersSearch(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := New(WithBaseURL(srv.URL))
+	client := vk.New(vk.WithBaseURL(srv.URL))
 
-	resp, err := c.UsersSearch(context.Background(), UsersSearchParams{
+	resp, err := Search(context.Background(), client, SearchParams{
 		Q:        "Вася Бабич",
 		Sort:     0,
 		Offset:   10,
@@ -401,7 +407,7 @@ func TestUsersSearch(t *testing.T) {
 		FromList: []string{"friends", "subscriptions"},
 	})
 	if err != nil {
-		t.Fatalf("UsersSearch() error = %v", err)
+		t.Fatalf("Search() error = %v", err)
 	}
 
 	if gotPath != "/users.search" {

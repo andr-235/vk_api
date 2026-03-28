@@ -7,6 +7,7 @@ import (
 	"os"
 
 	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/api/users"
 )
 
 func main() {
@@ -20,21 +21,15 @@ func main() {
 		vk.WithVersion("5.199"),
 	)
 
-	users, err := client.UsersGet(context.Background(), vk.UsersGetParams{
+	resp, err := users.Get(context.Background(), client, users.GetParams{
 		UserIDs: []string{"1"},
 		Fields:  []string{"bdate"},
 	})
 	if err != nil {
-		log.Fatalf("UsersGet error: %v", err)
+		log.Fatal(err)
 	}
 
-	fmt.Println("Users:")
-	for _, u := range users {
-		fmt.Printf("ID=%d %s %s bdate=%s\n",
-			u.ID,
-			u.FirstName,
-			u.LastName,
-			u.BDate,
-		)
+	for _, u := range resp {
+		fmt.Printf("ID=%d %s %s bdate=%s\n", u.ID, u.FirstName, u.LastName, u.BDate)
 	}
 }
