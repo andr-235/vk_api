@@ -35,7 +35,7 @@ func TestClientCall_Success(t *testing.T) {
 
 	var out []User
 	err := c.Call(context.Background(), "users.get", UsersGetParams{
-		UserIDs: []int{1, 2},
+		UserIDs: []string{"1", "2"},
 		Fields:  []string{"bdate", "photo_100"},
 	}, &out)
 	if err != nil {

@@ -21,7 +21,7 @@ func main() {
 	)
 
 	users, err := client.UsersGet(context.Background(), vk.UsersGetParams{
-		UserIDs: []int{1},
+		UserIDs: []string{"1"},
 		Fields:  []string{"bdate"},
 	})
 	if err != nil {
