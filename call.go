@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	internalencode "github.com/andr-235/vk-api/internal/encode"
+	internalencode "github.com/andr-235/vk_api/internal/encode"
 )
 
 func (c *Client) Call(ctx context.Context, method string, params any, out any) error {

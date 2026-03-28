@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/andr-235/vk"
+	vk "github.com/andr-235/vk_api"
 )
 
 func main() {

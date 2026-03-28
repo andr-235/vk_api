@@ -9,16 +9,18 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://api.vk.com/method/"
+	defaultBaseURL = "https://api.vk.ru/method/"
 	defaultVersion = "5.199"
 )
 
 type Client struct {
-	token      string
-	version    string
-	lang       string
-	baseURL    string
-	httpClient *http.Client
+	token       string
+	version     string
+	lang        string
+	testMode    bool
+	baseURL     string
+	httpClient  *http.Client
+	tokenSource TokenSource
 }
 
 func New(opts ...Option) *Client {
@@ -28,6 +30,7 @@ func New(opts ...Option) *Client {
 		httpClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
+		tokenSource: TokenInParams,
 	}
 
 	for _, opt := range opts {
