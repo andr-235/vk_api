@@ -297,6 +297,50 @@ type SubscriptionItem struct {
 	Group
 }
 
+type UsersSearchParams struct {
+	Q                 string   `url:"q,omitempty"`
+	Sort              int      `url:"sort,omitempty"`
+	Offset            int      `url:"offset,omitempty"`
+	Count             int      `url:"count,omitempty"`
+	Fields            []string `url:"fields,comma,omitempty"`
+	City              int      `url:"city,omitempty"`
+	CityID            int      `url:"city_id,omitempty"`
+	Country           int      `url:"country,omitempty"`
+	CountryID         int      `url:"country_id,omitempty"`
+	Hometown          string   `url:"hometown,omitempty"`
+	UniversityCountry int      `url:"university_country,omitempty"`
+	University        int      `url:"university,omitempty"`
+	UniversityYear    int      `url:"university_year,omitempty"`
+	UniversityFaculty int      `url:"university_faculty,omitempty"`
+	UniversityChair   int      `url:"university_chair,omitempty"`
+	Sex               int      `url:"sex,omitempty"`
+	Status            int      `url:"status,omitempty"`
+	AgeFrom           int      `url:"age_from,omitempty"`
+	AgeTo             int      `url:"age_to,omitempty"`
+	BirthDay          int      `url:"birth_day,omitempty"`
+	BirthMonth        int      `url:"birth_month,omitempty"`
+	BirthYear         int      `url:"birth_year,omitempty"`
+	Online            bool     `url:"online,omitempty"`
+	HasPhoto          bool     `url:"has_photo,omitempty"`
+	SchoolCountry     int      `url:"school_country,omitempty"`
+	SchoolCity        int      `url:"school_city,omitempty"`
+	SchoolClass       int      `url:"school_class,omitempty"`
+	School            int      `url:"school,omitempty"`
+	SchoolYear        int      `url:"school_year,omitempty"`
+	Religion          string   `url:"religion,omitempty"`
+	Company           string   `url:"company,omitempty"`
+	Position          string   `url:"position,omitempty"`
+	GroupID           int      `url:"group_id,omitempty"`
+	FromList          []string `url:"from_list,comma,omitempty"`
+	ScreenRef         string   `url:"screen_ref,omitempty"`
+	FromGroupID       int      `url:"from_group_id,omitempty"`
+}
+
+type UsersSearchResponse struct {
+	Count int    `json:"count"`
+	Items []User `json:"items"`
+}
+
 func (c *Client) UsersGet(ctx context.Context, params UsersGetParams) ([]User, error) {
 	var out []User
 	if err := c.Call(ctx, "users.get", params, &out); err != nil {
@@ -328,6 +372,14 @@ func (c *Client) UsersGetSubscriptionsExtended(ctx context.Context, params Users
 
 	var out UsersGetSubscriptionsExtendedResponse
 	if err := c.Call(ctx, "users.getSubscriptions", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *Client) UsersSearch(ctx context.Context, params UsersSearchParams) (*UsersSearchResponse, error) {
+	var out UsersSearchResponse
+	if err := c.Call(ctx, "users.search", params, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil

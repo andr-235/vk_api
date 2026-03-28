@@ -346,3 +346,123 @@ func TestUsersGetSubscriptionsExtended(t *testing.T) {
 		t.Fatalf("unexpected second item name: %q", resp.Items[1].Name)
 	}
 }
+
+func TestUsersSearch(t *testing.T) {
+	var gotPath string
+	var gotForm url.Values
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotPath = r.URL.Path
+		gotForm = r.URL.Query()
+
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"response": {
+				"count": 2,
+				"items": [
+					{
+						"id": 10,
+						"first_name": "Vasya",
+						"last_name": "Babich",
+						"screen_name": "vasya",
+						"online": 1,
+						"can_access_closed": true,
+						"is_closed": false
+					},
+					{
+						"id": 20,
+						"first_name": "Petr",
+						"last_name": "Petrov",
+						"photo_100": "https://example.com/p100.jpg",
+						"can_access_closed": true,
+						"is_closed": false
+					}
+				]
+			}
+		}`))
+	}))
+	defer srv.Close()
+
+	c := New(WithBaseURL(srv.URL))
+
+	resp, err := c.UsersSearch(context.Background(), UsersSearchParams{
+		Q:        "Вася Бабич",
+		Sort:     0,
+		Offset:   10,
+		Count:    2,
+		Fields:   []string{"screen_name", "photo_100", "online"},
+		City:     1,
+		Country:  1,
+		Sex:      2,
+		AgeFrom:  18,
+		AgeTo:    35,
+		Online:   true,
+		HasPhoto: true,
+		FromList: []string{"friends", "subscriptions"},
+	})
+	if err != nil {
+		t.Fatalf("UsersSearch() error = %v", err)
+	}
+
+	if gotPath != "/users.search" {
+		t.Fatalf("unexpected path: %s", gotPath)
+	}
+	if gotForm.Get("q") != "Вася Бабич" {
+		t.Fatalf("unexpected q: %q", gotForm.Get("q"))
+	}
+	if gotForm.Get("sort") != "0" {
+		t.Fatalf("unexpected sort: %q", gotForm.Get("sort"))
+	}
+	if gotForm.Get("offset") != "10" {
+		t.Fatalf("unexpected offset: %q", gotForm.Get("offset"))
+	}
+	if gotForm.Get("count") != "2" {
+		t.Fatalf("unexpected count: %q", gotForm.Get("count"))
+	}
+	if gotForm.Get("fields") != "screen_name,photo_100,online" {
+		t.Fatalf("unexpected fields: %q", gotForm.Get("fields"))
+	}
+	if gotForm.Get("city") != "1" {
+		t.Fatalf("unexpected city: %q", gotForm.Get("city"))
+	}
+	if gotForm.Get("country") != "1" {
+		t.Fatalf("unexpected country: %q", gotForm.Get("country"))
+	}
+	if gotForm.Get("sex") != "2" {
+		t.Fatalf("unexpected sex: %q", gotForm.Get("sex"))
+	}
+	if gotForm.Get("age_from") != "18" {
+		t.Fatalf("unexpected age_from: %q", gotForm.Get("age_from"))
+	}
+	if gotForm.Get("age_to") != "35" {
+		t.Fatalf("unexpected age_to: %q", gotForm.Get("age_to"))
+	}
+	if gotForm.Get("online") != "1" {
+		t.Fatalf("unexpected online: %q", gotForm.Get("online"))
+	}
+	if gotForm.Get("has_photo") != "1" {
+		t.Fatalf("unexpected has_photo: %q", gotForm.Get("has_photo"))
+	}
+	if gotForm.Get("from_list") != "friends,subscriptions" {
+		t.Fatalf("unexpected from_list: %q", gotForm.Get("from_list"))
+	}
+
+	if resp == nil {
+		t.Fatal("expected response, got nil")
+	}
+	if resp.Count != 2 {
+		t.Fatalf("unexpected count: %d", resp.Count)
+	}
+	if len(resp.Items) != 2 {
+		t.Fatalf("unexpected items len: %d", len(resp.Items))
+	}
+	if resp.Items[0].FirstName != "Vasya" {
+		t.Fatalf("unexpected first item first_name: %q", resp.Items[0].FirstName)
+	}
+	if resp.Items[0].Online != 1 {
+		t.Fatalf("unexpected first item online: %d", resp.Items[0].Online)
+	}
+	if resp.Items[1].Photo100 != "https://example.com/p100.jpg" {
+		t.Fatalf("unexpected second item photo_100: %q", resp.Items[1].Photo100)
+	}
+}
