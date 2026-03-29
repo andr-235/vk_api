@@ -4,6 +4,11 @@
 *.dll
 *.so
 *.dylib
+.qwen/
+!.qwen/skills/
+!.qwen/rules/
+
+QWEN.md
 
 # Test binary, built with `go test -c`
 *.test
