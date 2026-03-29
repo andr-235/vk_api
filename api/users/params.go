@@ -1,10 +1,20 @@
 package users
 
+import "errors"
+
 type GetParams struct {
 	UserIDs     []string `url:"user_ids,comma,omitempty"`
 	Fields      []string `url:"fields,comma,omitempty"`
 	NameCase    string   `url:"name_case,omitempty"`
 	FromGroupID int      `url:"from_group_id,omitempty"`
+}
+
+// Validate проверяет валидность параметров метода Get.
+func (p GetParams) Validate() error {
+	if len(p.UserIDs) == 0 {
+		return errors.New("user_ids обязателен")
+	}
+	return nil
 }
 
 type GetFollowersParams struct {
@@ -15,12 +25,40 @@ type GetFollowersParams struct {
 	NameCase string   `url:"name_case,omitempty"`
 }
 
+// Validate проверяет валидность параметров метода GetFollowers.
+func (p GetFollowersParams) Validate() error {
+	if p.UserID <= 0 {
+		return errors.New("user_id обязателен и должен быть положительным")
+	}
+	if p.Count < 0 {
+		return errors.New("count не может быть отрицательным")
+	}
+	if p.Offset < 0 {
+		return errors.New("offset не может быть отрицательным")
+	}
+	return nil
+}
+
 type GetSubscriptionsParams struct {
 	UserID   int      `url:"user_id,omitempty"`
 	Extended bool     `url:"extended,omitempty"`
 	Offset   int      `url:"offset,omitempty"`
 	Count    int      `url:"count,omitempty"`
 	Fields   []string `url:"fields,comma,omitempty"`
+}
+
+// Validate проверяет валидность параметров метода GetSubscriptions.
+func (p GetSubscriptionsParams) Validate() error {
+	if p.UserID <= 0 {
+		return errors.New("user_id обязателен и должен быть положительным")
+	}
+	if p.Count < 0 {
+		return errors.New("count не может быть отрицательным")
+	}
+	if p.Offset < 0 {
+		return errors.New("offset не может быть отрицательным")
+	}
+	return nil
 }
 
 type SearchParams struct {
@@ -60,4 +98,15 @@ type SearchParams struct {
 	FromList          []string `url:"from_list,comma,omitempty"`
 	ScreenRef         string   `url:"screen_ref,omitempty"`
 	FromGroupID       int      `url:"from_group_id,omitempty"`
+}
+
+// Validate проверяет валидность параметров метода Search.
+func (p SearchParams) Validate() error {
+	if p.Count < 0 {
+		return errors.New("count не может быть отрицательным")
+	}
+	if p.Offset < 0 {
+		return errors.New("offset не может быть отрицательным")
+	}
+	return nil
 }

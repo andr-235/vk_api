@@ -10,11 +10,11 @@ import (
 
 // Builder предоставляет fluent API для создания клиента.
 type Builder struct {
-	config      config.Config
+	config       config.Config
 	interceptors []middleware.RequestInterceptor
 	retryer      retry.Retryer
 	rateLimiter  ratelimit.RateLimiter
-	httpClient   transport.Doer
+	httpClient   Doer
 }
 
 // NewBuilder создаёт новый builder с конфигурацией по умолчанию.
@@ -82,7 +82,7 @@ func (b *Builder) WithRateLimiter(limiter ratelimit.RateLimiter) *Builder {
 }
 
 // WithHTTPClient устанавливает кастомный HTTP-клиент.
-func (b *Builder) WithHTTPClient(hc transport.Doer) *Builder {
+func (b *Builder) WithHTTPClient(hc Doer) *Builder {
 	b.httpClient = hc
 	return b
 }

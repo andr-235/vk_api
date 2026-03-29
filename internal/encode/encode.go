@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -18,8 +19,88 @@ type fieldInfo struct {
 	index     []int
 }
 
+// cacheEntry содержит запись кэша с временем создания
+type cacheEntry struct {
+	fields    []fieldInfo
+	createdAt time.Time
+}
+
 // cache хранит закэшированную информацию о полях для каждого типа
-var cache sync.Map // map[reflect.Type][]fieldInfo
+// Ограничение: максимум 1000 типов, TTL 1 час
+var (
+	cache        sync.Map // map[reflect.Type]cacheEntry
+	cacheSize    atomic.Int32
+	maxCacheSize int32 = 1000
+	cacheTTL           = time.Hour
+)
+
+// cleanCache очищает старые записи кэша
+func cleanCache() {
+	now := time.Now()
+	cache.Range(func(key, value any) bool {
+		if entry, ok := value.(cacheEntry); ok {
+			if now.Sub(entry.createdAt) > cacheTTL {
+				cache.Delete(key)
+				cacheSize.Add(-1)
+			}
+		}
+		return true
+	})
+}
+
+// getCachedFields получает или создаёт кэш полей для типа
+func getCachedFields(t reflect.Type) []fieldInfo {
+	// Периодическая очистка (каждые 100 запросов)
+	if cacheSize.Load()%100 == 0 {
+		cleanCache()
+	}
+
+	if v, ok := cache.Load(t); ok {
+		return v.(cacheEntry).fields
+	}
+
+	// Проверяем лимит перед добавлением
+	if cacheSize.Load() >= maxCacheSize {
+		cleanCache()
+		// Если всё ещё переполнен, не кэшируем
+		if cacheSize.Load() >= maxCacheSize {
+			return buildFields(t)
+		}
+	}
+
+	fields := buildFields(t)
+	cache.Store(t, cacheEntry{
+		fields:    fields,
+		createdAt: time.Now(),
+	})
+	cacheSize.Add(1)
+	return fields
+}
+
+// buildFields строит информацию о полях для типа
+func buildFields(t reflect.Type) []fieldInfo {
+	var fields []fieldInfo
+	for i := 0; i < t.NumField(); i++ {
+		sf := t.Field(i)
+		if sf.PkgPath != "" {
+			continue // пропущенные (unexported) поля
+		}
+
+		tag := sf.Tag.Get("url")
+		if tag == "-" {
+			continue
+		}
+
+		name, opts := parseTag(tag, sf.Name)
+		fields = append(fields, fieldInfo{
+			name:      name,
+			omitEmpty: hasOpt(opts, "omitempty"),
+			comma:     hasOpt(opts, "comma"),
+			index:     sf.Index,
+		})
+	}
+	return fields
+}
 
 func Values(v any) (url.Values, error) {
 	values := make(url.Values)
@@ -97,36 +178,6 @@ func fieldOpts(omitEmpty, comma bool) string {
 		}
 	}
 	return opts
-}
-
-func getCachedFields(t reflect.Type) []fieldInfo {
-	if v, ok := cache.Load(t); ok {
-		return v.([]fieldInfo)
-	}
-
-	var fields []fieldInfo
-	for i := 0; i < t.NumField(); i++ {
-		sf := t.Field(i)
-		if sf.PkgPath != "" {
-			continue // пропущенные (unexported) поля
-		}
-
-		tag := sf.Tag.Get("url")
-		if tag == "-" {
-			continue
-		}
-
-		name, opts := parseTag(tag, sf.Name)
-		fields = append(fields, fieldInfo{
-			name:      name,
-			omitEmpty: hasOpt(opts, "omitempty"),
-			comma:     hasOpt(opts, "comma"),
-			index:     sf.Index,
-		})
-	}
-
-	cache.Store(t, fields)
-	return fields
 }
 
 func parseTag(tag string, fallback string) (string, string) {

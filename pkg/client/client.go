@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/andr-235/vk_api/internal/encode"
@@ -15,6 +16,15 @@ import (
 	"github.com/andr-235/vk_api/pkg/retry"
 	"github.com/andr-235/vk_api/pkg/transport"
 )
+
+// requestIDCounter — глобальный счётчик для уникальных request ID
+var requestIDCounter atomic.Uint64
+var requestIDOnce sync.Once
+
+// initRequestIDCounter инициализирует счётчик случайным значением
+func initRequestIDCounter() {
+	requestIDCounter.Store(uint64(time.Now().UnixNano()))
+}
 
 // Caller определяет интерфейс для вызова методов VK API.
 type Caller interface {
@@ -29,9 +39,8 @@ type ListResponse[T any] struct {
 }
 
 // Doer определяет интерфейс для выполнения HTTP-запросов.
-type Doer interface {
-	Do(req *http.Request) (*http.Response, error)
-}
+// Экспортируется из pkg/transport для удобства.
+type Doer = transport.Doer
 
 // Client — основной клиент VK API.
 type Client struct {
@@ -50,7 +59,7 @@ type options struct {
 	interceptors middleware.InterceptorChain
 	retryer      retry.Retryer
 	rateLimiter  ratelimit.RateLimiter
-	httpClient   transport.Doer
+	httpClient   Doer
 }
 
 // New создаёт новый Client с заданными опциями.
@@ -162,7 +171,8 @@ func (c *Client) Config() config.Config {
 
 // generateRequestID генерирует уникальный ID запроса.
 func generateRequestID() string {
-	return fmt.Sprintf("%d", time.Now().UnixNano())
+	requestIDOnce.Do(initRequestIDCounter)
+	return fmt.Sprintf("%d", requestIDCounter.Add(1))
 }
 
 func generateTime() time.Time {

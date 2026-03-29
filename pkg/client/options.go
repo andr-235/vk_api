@@ -5,7 +5,6 @@ import (
 	"github.com/andr-235/vk_api/pkg/middleware"
 	"github.com/andr-235/vk_api/pkg/ratelimit"
 	"github.com/andr-235/vk_api/pkg/retry"
-	"github.com/andr-235/vk_api/pkg/transport"
 )
 
 // WithToken устанавливает токен доступа.
@@ -72,7 +71,7 @@ func WithRateLimiter(limiter ratelimit.RateLimiter) Option {
 }
 
 // WithHTTPClient устанавливает кастомный HTTP-клиент.
-func WithHTTPClient(hc transport.Doer) Option {
+func WithHTTPClient(hc Doer) Option {
 	return func(o *options) {
 		o.httpClient = hc
 	}

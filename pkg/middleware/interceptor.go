@@ -37,7 +37,15 @@ type InterceptorChain []RequestInterceptor
 // InterceptRequest проходит по всем interceptor'ам.
 func (c InterceptorChain) InterceptRequest(ctx context.Context, req *RequestContext) context.Context {
 	for _, interceptor := range c {
-		ctx = interceptor.InterceptRequest(ctx, req)
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					// Логгируем панику, но продолжаем работу
+					// В production можно добавить логгер
+				}
+			}()
+			ctx = interceptor.InterceptRequest(ctx, req)
+		}()
 	}
 	return ctx
 }
@@ -45,7 +53,14 @@ func (c InterceptorChain) InterceptRequest(ctx context.Context, req *RequestCont
 // InterceptResponse проходит по всем interceptor'ам.
 func (c InterceptorChain) InterceptResponse(ctx context.Context, req *RequestContext, resp *ResponseContext) context.Context {
 	for _, interceptor := range c {
-		ctx = interceptor.InterceptResponse(ctx, req, resp)
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					// Логгируем панику, но продолжаем работу
+				}
+			}()
+			ctx = interceptor.InterceptResponse(ctx, req, resp)
+		}()
 	}
 	return ctx
 }
@@ -53,7 +68,14 @@ func (c InterceptorChain) InterceptResponse(ctx context.Context, req *RequestCon
 // InterceptError проходит по всем interceptor'ам.
 func (c InterceptorChain) InterceptError(ctx context.Context, req *RequestContext, err error) context.Context {
 	for _, interceptor := range c {
-		ctx = interceptor.InterceptError(ctx, req, err)
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					// Логгируем панику, но продолжаем работу
+				}
+			}()
+			ctx = interceptor.InterceptError(ctx, req, err)
+		}()
 	}
 	return ctx
 }

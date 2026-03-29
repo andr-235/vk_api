@@ -5,6 +5,8 @@ import (
 	"errors"
 	"math"
 	"math/rand"
+	"net"
+	"net/url"
 	"time"
 )
 
@@ -90,12 +92,31 @@ func isTemporaryError(err error) bool {
 	return false
 }
 
-// isNetworkError определяет сетевые ошибки.
+// isNetworkError определяет сетевые ошибки через type assertion.
 func isNetworkError(err error) bool {
 	if err == nil {
 		return false
 	}
 
+	// Проверяем на net.Error (timeout, temporary)
+	var netErr net.Error
+	if errors.As(err, &netErr) {
+		return true
+	}
+
+	// Проверяем на *url.Error
+	var urlErr *url.Error
+	if errors.As(err, &urlErr) {
+		return true
+	}
+
+	// Проверяем на *net.OpError
+	var opErr *net.OpError
+	if errors.As(err, &opErr) {
+		return true
+	}
+
+	// Фоллбэк на строковую проверку
 	errStr := err.Error()
 	return containsAny(errStr, []string{
 		"timeout",

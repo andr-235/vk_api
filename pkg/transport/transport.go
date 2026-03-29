@@ -12,6 +12,11 @@ import (
 	"github.com/andr-235/vk_api/pkg/config"
 )
 
+// Doer определяет интерфейс для выполнения HTTP-запросов.
+type Doer interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 // DefaultHTTPClient возвращает HTTP-клиент с оптимальными настройками.
 func DefaultHTTPClient() *http.Client {
 	return &http.Client{
@@ -22,11 +27,6 @@ func DefaultHTTPClient() *http.Client {
 			IdleConnTimeout:     90 * time.Second,
 		},
 	}
-}
-
-// Doer определяет интерфейс для выполнения HTTP-запросов.
-type Doer interface {
-	Do(req *http.Request) (*http.Response, error)
 }
 
 // Transport выполняет HTTP-запросы к VK API.
