@@ -5,23 +5,23 @@ import "github.com/andr-235/vk_api/pkg/client"
 type GetMembersResponse = client.ListResponse[MemberRef]
 
 type Address struct {
-	ID                int         `json:"id"`
-	Title             string      `json:"title"`
-	Address           string      `json:"address"`
-	AdditionalAddress string      `json:"additional_address,omitempty"`
-	CountryID         int         `json:"country_id"`
-	CityID            int         `json:"city_id"`
-	MetroStationID    int         `json:"metro_station_id,omitempty"`
-	Latitude          float64     `json:"latitude"`
-	Longitude         float64     `json:"longitude"`
-	Distance          int         `json:"distance,omitempty"`
-	Phone             string      `json:"phone,omitempty"`
-	TimeOffset        int         `json:"time_offset,omitempty"`
-	WorkInfoStatus    string      `json:"work_info_status,omitempty"`
-	Timetable         *Timetable  `json:"timetable,omitempty"`
-	IsMainAddress     bool        `json:"is_main_address"`
-	City              *City       `json:"city,omitempty"`
-	Country           *Country    `json:"country,omitempty"`
+	ID                int        `json:"id"`
+	Title             string     `json:"title"`
+	Address           string     `json:"address"`
+	AdditionalAddress string     `json:"additional_address,omitempty"`
+	CountryID         int        `json:"country_id"`
+	CityID            int        `json:"city_id"`
+	MetroStationID    int        `json:"metro_station_id,omitempty"`
+	Latitude          float64    `json:"latitude"`
+	Longitude         float64    `json:"longitude"`
+	Distance          int        `json:"distance,omitempty"`
+	Phone             string     `json:"phone,omitempty"`
+	TimeOffset        int        `json:"time_offset,omitempty"`
+	WorkInfoStatus    string     `json:"work_info_status,omitempty"`
+	Timetable         *Timetable `json:"timetable,omitempty"`
+	IsMainAddress     bool       `json:"is_main_address"`
+	City              *City      `json:"city,omitempty"`
+	Country           *Country   `json:"country,omitempty"`
 }
 
 type Timetable struct {

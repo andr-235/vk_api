@@ -7,12 +7,12 @@ import (
 )
 
 type testParams struct {
-	String     string   `url:"string,omitempty"`
-	Int        int      `url:"int,omitempty"`
-	Float      float64  `url:"float,omitempty"`
-	Bool       bool     `url:"bool,omitempty"`
-	StringSlice []string `url:"strings,comma,omitempty"`
-	Time       time.Time `url:"time,omitempty"`
+	String      string    `url:"string,omitempty"`
+	Int         int       `url:"int,omitempty"`
+	Float       float64   `url:"float,omitempty"`
+	Bool        bool      `url:"bool,omitempty"`
+	StringSlice []string  `url:"strings,comma,omitempty"`
+	Time        time.Time `url:"time,omitempty"`
 }
 
 func BenchmarkValues(b *testing.B) {

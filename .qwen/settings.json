@@ -9,7 +9,13 @@
       "Bash(del *)",
       "Bash(rmdir *)",
       "Bash(replace *)",
-      "Bash(set-content *)"
+      "Bash(set-content *)",
+      "Bash(get-childitem *)",
+      "Bash(where-object *)",
+      "Bash(select-object *)",
+      "Bash(foreach-object *)",
+      "Bash(gofmt *)",
+      "Bash(findstr *)"
     ]
   },
   "$version": 3

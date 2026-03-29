@@ -32,31 +32,31 @@ type MemberRef = users.Profile
 
 // BannedGroup представляет информацию о забаненном сообществе
 type BannedGroup struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	ScreenName string `json:"screen_name,omitempty"`
-	Type       string `json:"type,omitempty"`
-	IsClosed   int    `json:"is_closed,omitempty"`
-	MembersCount int  `json:"members_count,omitempty"`
-	Photo50    string `json:"photo_50,omitempty"`
-	Photo100   string `json:"photo_100,omitempty"`
-	Photo200   string `json:"photo_200,omitempty"`
-	Description string `json:"description,omitempty"`
+	ID           int    `json:"id"`
+	Name         string `json:"name"`
+	ScreenName   string `json:"screen_name,omitempty"`
+	Type         string `json:"type,omitempty"`
+	IsClosed     int    `json:"is_closed,omitempty"`
+	MembersCount int    `json:"members_count,omitempty"`
+	Photo50      string `json:"photo_50,omitempty"`
+	Photo100     string `json:"photo_100,omitempty"`
+	Photo200     string `json:"photo_200,omitempty"`
+	Description  string `json:"description,omitempty"`
 }
 
 // BanInfo представляет информацию о блокировке
 type BanInfo struct {
-	AdminID   int    `json:"admin_id"`
-	Date      int    `json:"date"`
-	Reason    int    `json:"reason"`
-	Comment   string `json:"comment,omitempty"`
-	EndDate   int    `json:"end_date"`
+	AdminID int    `json:"admin_id"`
+	Date    int    `json:"date"`
+	Reason  int    `json:"reason"`
+	Comment string `json:"comment,omitempty"`
+	EndDate int    `json:"end_date"`
 }
 
 // BannedItem представляет элемент чёрного списка сообщества
 type BannedItem struct {
-	Type    string        `json:"type"`
+	Type    string         `json:"type"`
 	Profile *BannedProfile `json:"profile,omitempty"`
 	Group   *BannedGroup   `json:"group,omitempty"`
-	BanInfo *BanInfo      `json:"ban_info,omitempty"`
+	BanInfo *BanInfo       `json:"ban_info,omitempty"`
 }

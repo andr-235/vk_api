@@ -90,10 +90,10 @@ func (p AddAddressParams) Validate() error {
 }
 
 type AddCallbackServerParams struct {
-	GroupID     int    `url:"group_id,omitempty"`
-	URL         string `url:"url,omitempty"`
-	Title       string `url:"title,omitempty"`
-	SecretKey   string `url:"secret_key,omitempty"`
+	GroupID   int    `url:"group_id,omitempty"`
+	URL       string `url:"url,omitempty"`
+	Title     string `url:"title,omitempty"`
+	SecretKey string `url:"secret_key,omitempty"`
 }
 
 // Validate проверяет валидность параметров метода AddCallbackServer
@@ -111,8 +111,8 @@ func (p AddCallbackServerParams) Validate() error {
 }
 
 type DeleteAddressParams struct {
-	GroupID    int `url:"group_id,omitempty"`
-	AddressID  int `url:"address_id,omitempty"`
+	GroupID   int `url:"group_id,omitempty"`
+	AddressID int `url:"address_id,omitempty"`
 }
 
 // Validate проверяет валидность параметров метода DeleteAddress
@@ -143,7 +143,7 @@ func (p DeleteCallbackServerParams) Validate() error {
 }
 
 type DisableOnlineParams struct {
-	GroupID  int `url:"group_id,omitempty"`
+	GroupID int `url:"group_id,omitempty"`
 }
 
 // Validate проверяет валидность параметров метода DisableOnline
@@ -196,11 +196,11 @@ func (p EditAddressParams) Validate() error {
 }
 
 type EditCallbackServerParams struct {
-	GroupID    int    `url:"group_id,omitempty"`
-	ServerID   int    `url:"server_id,omitempty"`
-	URL        string `url:"url,omitempty"`
-	Title      string `url:"title,omitempty"`
-	SecretKey  string `url:"secret_key,omitempty"`
+	GroupID   int    `url:"group_id,omitempty"`
+	ServerID  int    `url:"server_id,omitempty"`
+	URL       string `url:"url,omitempty"`
+	Title     string `url:"title,omitempty"`
+	SecretKey string `url:"secret_key,omitempty"`
 }
 
 // Validate проверяет валидность параметров метода EditCallbackServer
@@ -218,7 +218,7 @@ func (p EditCallbackServerParams) Validate() error {
 }
 
 type EnableOnlineParams struct {
-	GroupID  int `url:"group_id,omitempty"`
+	GroupID int `url:"group_id,omitempty"`
 }
 
 // Validate проверяет валидность параметров метода EnableOnline
@@ -266,35 +266,35 @@ const (
 
 // Значения для параметра fields в методе Get
 const (
-	FieldActivity         = "activity"
-	FieldCanCreateTopic   = "can_create_topic"
-	FieldCanPost          = "can_post"
-	FieldCanSeeAllPosts   = "can_see_all_posts"
-	FieldCity             = "city"
-	FieldContacts         = "contacts"
-	FieldCounters         = "counters"
-	FieldCountry          = "country"
-	FieldDescription      = "description"
-	FieldFinishDate       = "finish_date"
-	FieldFixedPost        = "fixed_post"
-	FieldLinks            = "links"
-	FieldMembersCount     = "members_count"
-	FieldPlace            = "place"
-	FieldSite             = "site"
-	FieldStartDate        = "start_date"
-	FieldStatus           = "status"
-	FieldVerified         = "verified"
-	FieldWikiPage         = "wiki_page"
+	FieldActivity       = "activity"
+	FieldCanCreateTopic = "can_create_topic"
+	FieldCanPost        = "can_post"
+	FieldCanSeeAllPosts = "can_see_all_posts"
+	FieldCity           = "city"
+	FieldContacts       = "contacts"
+	FieldCounters       = "counters"
+	FieldCountry        = "country"
+	FieldDescription    = "description"
+	FieldFinishDate     = "finish_date"
+	FieldFixedPost      = "fixed_post"
+	FieldLinks          = "links"
+	FieldMembersCount   = "members_count"
+	FieldPlace          = "place"
+	FieldSite           = "site"
+	FieldStartDate      = "start_date"
+	FieldStatus         = "status"
+	FieldVerified       = "verified"
+	FieldWikiPage       = "wiki_page"
 )
 
 type GetAddressesParams struct {
-	GroupID     int    `url:"group_id,omitempty"`
-	AddressIDs  []int  `url:"address_ids,comma,omitempty"`
-	Latitude    string `url:"latitude,omitempty"`
-	Longitude   string `url:"longitude,omitempty"`
-	Offset      int    `url:"offset,omitempty"`
-	Count       int    `url:"count,omitempty"`
-	Fields      []string `url:"fields,comma,omitempty"`
+	GroupID    int      `url:"group_id,omitempty"`
+	AddressIDs []int    `url:"address_ids,comma,omitempty"`
+	Latitude   string   `url:"latitude,omitempty"`
+	Longitude  string   `url:"longitude,omitempty"`
+	Offset     int      `url:"offset,omitempty"`
+	Count      int      `url:"count,omitempty"`
+	Fields     []string `url:"fields,comma,omitempty"`
 }
 
 type GetBannedParams struct {

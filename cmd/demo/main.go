@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/andr-235/vk_api/pkg/client"
-	"github.com/andr-235/vk_api/pkg/config"
 	"github.com/andr-235/vk_api/api/groups"
 	"github.com/andr-235/vk_api/api/users"
+	"github.com/andr-235/vk_api/pkg/client"
+	"github.com/andr-235/vk_api/pkg/config"
 )
 
 func main() {

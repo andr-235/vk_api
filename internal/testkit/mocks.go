@@ -8,7 +8,7 @@ import (
 
 // MockCaller — мок интерфейса vk.Caller для тестирования.
 type MockCaller struct {
-	CallFunc           func(ctx context.Context, method string, params, out any) error
+	CallFunc               func(ctx context.Context, method string, params, out any) error
 	CallWithRawHandlerFunc func(ctx context.Context, method string, params any, handler func(json.RawMessage) error) error
 }
 

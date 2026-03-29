@@ -29,10 +29,10 @@ type Builder struct {
 // NewBuilder создаёт новый builder с конфигурацией по умолчанию.
 func NewBuilder() *Builder {
 	return &Builder{
-		config:      config.DefaultConfig(),
+		config:       config.DefaultConfig(),
 		interceptors: middleware.InterceptorChain{},
-		retryer:     retry.NewNoRetryer(),
-		rateLimiter: ratelimit.NewNoOpRateLimiter(),
+		retryer:      retry.NewNoRetryer(),
+		rateLimiter:  ratelimit.NewNoOpRateLimiter(),
 	}
 }
 

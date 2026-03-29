@@ -162,7 +162,7 @@ func (t *Transport) encodeParams(params url.Values) string {
 
 // responseEnvelope представляет ответ VK API.
 type responseEnvelope struct {
-	Response json.RawMessage `json:"response"`
+	Response json.RawMessage  `json:"response"`
 	Error    *vkErrorEnvelope `json:"error"`
 }
 
