@@ -5,6 +5,22 @@ type GetMembersResponse struct {
 	Items []MemberRef `json:"items"`
 }
 
+type Address struct {
+	ID                int    `json:"id"`
+	Title             string `json:"title"`
+	Address           string `json:"address"`
+	AdditionalAddress string `json:"additional_address,omitempty"`
+	CountryID         int    `json:"country_id"`
+	CityID            int    `json:"city_id"`
+	MetroID           int    `json:"metro_id,omitempty"`
+	Latitude          string `json:"latitude"`
+	Longitude         string `json:"longitude"`
+	Phone             string `json:"phone,omitempty"`
+	WorkInfoStatus    string `json:"work_info_status,omitempty"`
+	Timetable         string `json:"timetable,omitempty"`
+	IsMainAddress     bool   `json:"is_main_address"`
+}
+
 type MemberRef struct {
 	ID              int    `json:"id"`
 	FirstName       string `json:"first_name,omitempty"`

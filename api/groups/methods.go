@@ -21,3 +21,11 @@ func GetMembers(ctx context.Context, c *vk.Client, params GetMembersParams) (*Ge
 	}
 	return &out, nil
 }
+
+func AddAddress(ctx context.Context, c *vk.Client, params AddAddressParams) (*Address, error) {
+	var out Address
+	if err := c.Call(ctx, "groups.addAddress", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
