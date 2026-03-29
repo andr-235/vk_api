@@ -28,7 +28,7 @@ func (p MessagesSendParams) Validate() error {
 	return nil
 }
 
-func Send(ctx context.Context, c *vk.Client, params MessagesSendParams) (int, error) {
+func Send(ctx context.Context, c vk.Caller, params MessagesSendParams) (int, error) {
 	if err := params.Validate(); err != nil {
 		return 0, fmt.Errorf("messages.Send: invalid params: %w", err)
 	}

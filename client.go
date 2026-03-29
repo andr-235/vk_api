@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/andr-235/vk_api/internal/transport"
 )
@@ -23,17 +22,19 @@ type Client struct {
 	lang        string
 	testMode    bool
 	baseURL     string
-	httpClient  *http.Client
+	httpClient  Doer
 	tokenSource TokenSource
+	rateLimiter RateLimiter
 }
+
+// Проверка, что Client реализует интерфейс Caller
+var _ Caller = (*Client)(nil)
 
 func New(opts ...Option) *Client {
 	c := &Client{
-		version: defaultVersion,
-		baseURL: defaultBaseURL,
-		httpClient: &http.Client{
-			Timeout: 30 * time.Second,
-		},
+		version:    defaultVersion,
+		baseURL:    defaultBaseURL,
+		httpClient: DefaultHTTPClient(),
 		tokenSource: TokenInParams,
 	}
 
@@ -66,6 +67,13 @@ func (c *Client) transportConfig() transport.Config {
 }
 
 func (c *Client) doRequest(ctx context.Context, method string, params any) (*responseEnvelope, error) {
+	// Ждём разрешения от rate limiter
+	if c.rateLimiter != nil {
+		if err := c.rateLimiter.Wait(ctx); err != nil {
+			return nil, fmt.Errorf("vk: rate limiter wait: %w", err)
+		}
+	}
+
 	cfg := c.transportConfig()
 
 	values, err := transport.EncodeValues(params)
@@ -113,7 +121,7 @@ func (c *Client) doRequest(ctx context.Context, method string, params any) (*res
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("vk: unexpected http status %d", resp.StatusCode)
+		return nil, ParseHTTPError(resp, string(body))
 	}
 
 	var respEnv responseEnvelope
@@ -122,13 +130,32 @@ func (c *Client) doRequest(ctx context.Context, method string, params any) (*res
 	}
 
 	if respEnv.Error != nil {
-		return nil, &VKError{
+		vkErr := &VKError{
 			Code:             respEnv.Error.Code,
 			Message:          respEnv.Error.Message,
 			CaptchaSID:       respEnv.Error.CaptchaSID,
 			CaptchaImg:       respEnv.Error.CaptchaImg,
 			RedirectURI:      respEnv.Error.RedirectURI,
 			ConfirmationText: respEnv.Error.ConfirmationText,
+		}
+
+		// Возвращаем специфичную ошибку в зависимости от кода
+		switch respEnv.Error.Code {
+		case ErrorCodeAuthFailed:
+			return nil, &AuthError{Code: respEnv.Error.Code, Message: respEnv.Error.Message}
+		case ErrorCodeCaptcha:
+			return nil, &CaptchaError{
+				Code:       respEnv.Error.Code,
+				Message:    respEnv.Error.Message,
+				CaptchaSID: respEnv.Error.CaptchaSID,
+				CaptchaImg: respEnv.Error.CaptchaImg,
+			}
+		case ErrorCodeTooManyRequests, ErrorCodeRateLimit:
+			return nil, &RateLimitError{Code: respEnv.Error.Code, Message: respEnv.Error.Message}
+		case ErrorCodePermissionDenied, ErrorCodeAccessDenied:
+			return nil, &PermissionError{Code: respEnv.Error.Code, Message: respEnv.Error.Message}
+		default:
+			return nil, vkErr
 		}
 	}
 

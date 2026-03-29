@@ -139,7 +139,8 @@ func TestGet_APIError(t *testing.T) {
 		t.Fatal("expected error, got nil")
 	}
 
-	if err.Error() != "vk api error 5: User authorization failed" {
-		t.Fatalf("unexpected error: %v", err)
+	// Проверяем, что это ошибка аутентификации
+	if !vk.IsAuth(err) {
+		t.Fatalf("expected auth error, got: %T %v", err, err)
 	}
 }

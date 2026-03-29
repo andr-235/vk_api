@@ -1,5 +1,7 @@
 package groups
 
+import "github.com/andr-235/vk_api/api/users"
+
 type Group struct {
 	ID         int    `json:"id"`
 	Name       string `json:"name"`
@@ -22,39 +24,27 @@ type Group struct {
 	Site        string `json:"site,omitempty"`
 }
 
-type BannedProfile struct {
-	ID              int    `json:"id"`
-	FirstName       string `json:"first_name,omitempty"`
-	LastName        string `json:"last_name,omitempty"`
-	CanAccessClosed bool   `json:"can_access_closed,omitempty"`
-	IsClosed        bool   `json:"is_closed,omitempty"`
-	Deactivated     string `json:"deactivated,omitempty"`
+// BannedProfile — тип-алиас для users.Profile, используется в методе GetBanned
+type BannedProfile = users.Profile
 
-	Photo50  string `json:"photo_50,omitempty"`
-	Photo100 string `json:"photo_100,omitempty"`
-	Photo200 string `json:"photo_200,omitempty"`
+// MemberRef — тип-алиас для users.Profile, используется в методе GetMembers
+type MemberRef = users.Profile
 
-	Online int `json:"online,omitempty"`
-	Sex    int `json:"sex,omitempty"`
-}
-
+// BannedGroup представляет информацию о забаненном сообществе
 type BannedGroup struct {
 	ID         int    `json:"id"`
 	Name       string `json:"name"`
 	ScreenName string `json:"screen_name,omitempty"`
 	Type       string `json:"type,omitempty"`
-
-	IsClosed int `json:"is_closed,omitempty"`
-
-	MembersCount int `json:"members_count,omitempty"`
-
-	Photo50  string `json:"photo_50,omitempty"`
-	Photo100 string `json:"photo_100,omitempty"`
-	Photo200 string `json:"photo_200,omitempty"`
-
+	IsClosed   int    `json:"is_closed,omitempty"`
+	MembersCount int  `json:"members_count,omitempty"`
+	Photo50    string `json:"photo_50,omitempty"`
+	Photo100   string `json:"photo_100,omitempty"`
+	Photo200   string `json:"photo_200,omitempty"`
 	Description string `json:"description,omitempty"`
 }
 
+// BanInfo представляет информацию о блокировке
 type BanInfo struct {
 	AdminID   int    `json:"admin_id"`
 	Date      int    `json:"date"`
@@ -63,9 +53,10 @@ type BanInfo struct {
 	EndDate   int    `json:"end_date"`
 }
 
+// BannedItem представляет элемент чёрного списка сообщества
 type BannedItem struct {
-	Type     string        `json:"type"`
-	Profile  *BannedProfile `json:"profile,omitempty"`
-	Group    *BannedGroup   `json:"group,omitempty"`
-	BanInfo  *BanInfo      `json:"ban_info,omitempty"`
+	Type    string        `json:"type"`
+	Profile *BannedProfile `json:"profile,omitempty"`
+	Group   *BannedGroup   `json:"group,omitempty"`
+	BanInfo *BanInfo      `json:"ban_info,omitempty"`
 }

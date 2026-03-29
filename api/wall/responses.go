@@ -1,6 +1,5 @@
 package wall
 
-type WallGetResponse struct {
-	Count int        `json:"count"`
-	Items []WallPost `json:"items"`
-}
+import vk "github.com/andr-235/vk_api"
+
+type WallGetResponse = vk.ListResponse[WallPost]

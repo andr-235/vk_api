@@ -1,9 +1,8 @@
 package groups
 
-type GetMembersResponse struct {
-	Count int         `json:"count"`
-	Items []MemberRef `json:"items"`
-}
+import vk "github.com/andr-235/vk_api"
+
+type GetMembersResponse = vk.ListResponse[MemberRef]
 
 type Address struct {
 	ID                int         `json:"id"`
@@ -52,35 +51,13 @@ type Country struct {
 	Title string `json:"title"`
 }
 
-type MemberRef struct {
-	ID              int    `json:"id"`
-	FirstName       string `json:"first_name,omitempty"`
-	LastName        string `json:"last_name,omitempty"`
-	CanAccessClosed bool   `json:"can_access_closed,omitempty"`
-	IsClosed        bool   `json:"is_closed,omitempty"`
-	Deactivated     string `json:"deactivated,omitempty"`
-
-	Photo50  string `json:"photo_50,omitempty"`
-	Photo100 string `json:"photo_100,omitempty"`
-	Photo200 string `json:"photo_200,omitempty"`
-
-	Online int `json:"online,omitempty"`
-	Sex    int `json:"sex,omitempty"`
-}
-
 type AddCallbackServerResponse struct {
 	ServerID int `json:"server_id"`
 }
 
-type GetResponse struct {
-	Count int     `json:"count"`
-	Items []Group `json:"items"`
-}
+type GetResponse = vk.ListResponse[Group]
 
-type GetAddressesResponse struct {
-	Count int       `json:"count"`
-	Items []Address `json:"items"`
-}
+type GetAddressesResponse = vk.ListResponse[Address]
 
 type GetBannedResponse struct {
 	Count int          `json:"count"`

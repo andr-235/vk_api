@@ -6,8 +6,20 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
+
+// fieldInfo хранит информацию о поле для кодирования
+type fieldInfo struct {
+	name      string
+	omitEmpty bool
+	comma     bool
+	index     []int
+}
+
+// cache хранит закэшированную информацию о полях для каждого типа
+var cache sync.Map // map[reflect.Type][]fieldInfo
 
 func Values(v any) (url.Values, error) {
 	values := make(url.Values)
@@ -56,12 +68,47 @@ func encodeMap(rv reflect.Value) (url.Values, error) {
 
 func encodeStruct(rv reflect.Value) (url.Values, error) {
 	values := make(url.Values)
-	rt := rv.Type()
+	fields := getCachedFields(rv.Type())
 
-	for i := 0; i < rv.NumField(); i++ {
-		sf := rt.Field(i)
+	for _, f := range fields {
+		fieldVal := rv.FieldByIndex(f.index)
+		val, ok, err := stringify(fieldVal, fieldOpts(f.omitEmpty, f.comma))
+		if err != nil {
+			return nil, fmt.Errorf("encode field %q: %w", f.name, err)
+		}
+		if ok {
+			values.Set(f.name, val)
+		}
+	}
+
+	return values, nil
+}
+
+func fieldOpts(omitEmpty, comma bool) string {
+	var opts string
+	if omitEmpty {
+		opts = "omitempty"
+	}
+	if comma {
+		if opts != "" {
+			opts += ",comma"
+		} else {
+			opts = "comma"
+		}
+	}
+	return opts
+}
+
+func getCachedFields(t reflect.Type) []fieldInfo {
+	if v, ok := cache.Load(t); ok {
+		return v.([]fieldInfo)
+	}
+
+	var fields []fieldInfo
+	for i := 0; i < t.NumField(); i++ {
+		sf := t.Field(i)
 		if sf.PkgPath != "" {
-			continue
+			continue // пропущенные (unexported) поля
 		}
 
 		tag := sf.Tag.Get("url")
@@ -70,16 +117,16 @@ func encodeStruct(rv reflect.Value) (url.Values, error) {
 		}
 
 		name, opts := parseTag(tag, sf.Name)
-		val, ok, err := stringify(rv.Field(i), opts)
-		if err != nil {
-			return nil, fmt.Errorf("encode field %q: %w", sf.Name, err)
-		}
-		if ok {
-			values.Set(name, val)
-		}
+		fields = append(fields, fieldInfo{
+			name:      name,
+			omitEmpty: hasOpt(opts, "omitempty"),
+			comma:     hasOpt(opts, "comma"),
+			index:     sf.Index,
+		})
 	}
 
-	return values, nil
+	cache.Store(t, fields)
+	return fields
 }
 
 func parseTag(tag string, fallback string) (string, string) {

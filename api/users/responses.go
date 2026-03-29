@@ -1,9 +1,8 @@
 package users
 
-type GetFollowersResponse struct {
-	Count int    `json:"count"`
-	Items []User `json:"items"`
-}
+import vk "github.com/andr-235/vk_api"
+
+type GetFollowersResponse = vk.ListResponse[Profile]
 
 type SubscriptionIDs struct {
 	Count int   `json:"count"`
@@ -15,10 +14,7 @@ type GetSubscriptionsResponse struct {
 	Groups SubscriptionIDs `json:"groups"`
 }
 
-type GetSubscriptionsExtendedResponse struct {
-	Count int                `json:"count"`
-	Items []SubscriptionItem `json:"items"`
-}
+type GetSubscriptionsExtendedResponse = vk.ListResponse[SubscriptionItem]
 
 type SubscriptionItem struct {
 	Type string `json:"type,omitempty"`
@@ -41,7 +37,4 @@ type SubscriptionItem struct {
 	MembersCount int `json:"members_count,omitempty"`
 }
 
-type SearchResponse struct {
-	Count int    `json:"count"`
-	Items []User `json:"items"`
-}
+type SearchResponse = vk.ListResponse[User]

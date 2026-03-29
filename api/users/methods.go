@@ -6,7 +6,7 @@ import (
 	vk "github.com/andr-235/vk_api"
 )
 
-func Get(ctx context.Context, c *vk.Client, params GetParams) ([]User, error) {
+func Get(ctx context.Context, c vk.Caller, params GetParams) ([]User, error) {
 	var out []User
 	if err := c.Call(ctx, "users.get", params, &out); err != nil {
 		return nil, err
@@ -14,7 +14,7 @@ func Get(ctx context.Context, c *vk.Client, params GetParams) ([]User, error) {
 	return out, nil
 }
 
-func GetFollowers(ctx context.Context, c *vk.Client, params GetFollowersParams) (*GetFollowersResponse, error) {
+func GetFollowers(ctx context.Context, c vk.Caller, params GetFollowersParams) (*GetFollowersResponse, error) {
 	var out GetFollowersResponse
 	if err := c.Call(ctx, "users.getFollowers", params, &out); err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func GetFollowers(ctx context.Context, c *vk.Client, params GetFollowersParams) 
 	return &out, nil
 }
 
-func GetSubscriptions(ctx context.Context, c *vk.Client, params GetSubscriptionsParams) (*GetSubscriptionsResponse, error) {
+func GetSubscriptions(ctx context.Context, c vk.Caller, params GetSubscriptionsParams) (*GetSubscriptionsResponse, error) {
 	params.Extended = false
 
 	var out GetSubscriptionsResponse
@@ -32,7 +32,7 @@ func GetSubscriptions(ctx context.Context, c *vk.Client, params GetSubscriptions
 	return &out, nil
 }
 
-func GetSubscriptionsExtended(ctx context.Context, c *vk.Client, params GetSubscriptionsParams) (*GetSubscriptionsExtendedResponse, error) {
+func GetSubscriptionsExtended(ctx context.Context, c vk.Caller, params GetSubscriptionsParams) (*GetSubscriptionsExtendedResponse, error) {
 	params.Extended = true
 
 	var out GetSubscriptionsExtendedResponse
@@ -42,7 +42,7 @@ func GetSubscriptionsExtended(ctx context.Context, c *vk.Client, params GetSubsc
 	return &out, nil
 }
 
-func Search(ctx context.Context, c *vk.Client, params SearchParams) (*SearchResponse, error) {
+func Search(ctx context.Context, c vk.Caller, params SearchParams) (*SearchResponse, error) {
 	var out SearchResponse
 	if err := c.Call(ctx, "users.search", params, &out); err != nil {
 		return nil, err
