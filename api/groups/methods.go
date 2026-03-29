@@ -61,3 +61,11 @@ func DisableOnline(ctx context.Context, c *vk.Client, params DisableOnlineParams
 	}
 	return out == 1, nil
 }
+
+func EditAddress(ctx context.Context, c *vk.Client, params EditAddressParams) (*Address, error) {
+	var out Address
+	if err := c.Call(ctx, "groups.editAddress", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
