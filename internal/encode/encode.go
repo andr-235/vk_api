@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func Values(v any) (url.Values, error) {
@@ -107,7 +108,7 @@ func stringify(v reflect.Value, opts string) (string, bool, error) {
 		v = v.Elem()
 	}
 
-	if hasOpt(opts, "omitempty") && isZero(v) {
+	if hasOpt(opts, "omitempty") && v.IsZero() {
 		return "", false, nil
 	}
 
@@ -132,6 +133,15 @@ func stringify(v reflect.Value, opts string) (string, bool, error) {
 
 	case reflect.Float64:
 		return strconv.FormatFloat(v.Float(), 'f', -1, 64), true, nil
+
+	case reflect.Struct:
+		if t, ok := v.Interface().(time.Time); ok {
+			if t.IsZero() && hasOpt(opts, "omitempty") {
+				return "", false, nil
+			}
+			return strconv.FormatInt(t.Unix(), 10), true, nil
+		}
+		return "", false, fmt.Errorf("unsupported struct kind: %s", v.Type())
 
 	case reflect.Slice, reflect.Array:
 		if v.Len() == 0 && hasOpt(opts, "omitempty") {
@@ -168,8 +178,4 @@ func hasOpt(opts string, target string) bool {
 		}
 	}
 	return false
-}
-
-func isZero(v reflect.Value) bool {
-	return v.IsZero()
 }

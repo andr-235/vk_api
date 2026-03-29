@@ -69,6 +69,10 @@ func (e *VKError) Error() string {
 	return fmt.Sprintf("vk api error %d: %s", e.Code, e.Message)
 }
 
+func (e *VKError) Unwrap() error {
+	return nil
+}
+
 func (e *VKError) IsAuth() bool {
 	return e != nil && e.Code == ErrorCodeAuthFailed
 }

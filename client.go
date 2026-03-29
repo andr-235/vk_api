@@ -3,7 +3,6 @@ package vk
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -42,27 +41,11 @@ func New(opts ...Option) *Client {
 		opt(c)
 	}
 
-	if c.httpClient == nil {
-		c.httpClient = http.DefaultClient
-	}
-	if c.baseURL == "" {
-		c.baseURL = defaultBaseURL
-	}
 	if !strings.HasSuffix(c.baseURL, "/") {
 		c.baseURL += "/"
 	}
-	if c.version == "" {
-		c.version = defaultVersion
-	}
 
 	return c
-}
-
-func (c *Client) endpoint(method string) (string, error) {
-	if strings.TrimSpace(method) == "" {
-		return "", errors.New("vk: method is required")
-	}
-	return fmt.Sprintf("%s%s", c.baseURL, method), nil
 }
 
 func (c *Client) transportConfig() transport.Config {
@@ -82,12 +65,12 @@ func (c *Client) transportConfig() transport.Config {
 	}
 }
 
-func (c *Client) Call(ctx context.Context, method string, params, out any) error {
+func (c *Client) doRequest(ctx context.Context, method string, params any) (*responseEnvelope, error) {
 	cfg := c.transportConfig()
 
 	values, err := transport.EncodeValues(params)
 	if err != nil {
-		return fmt.Errorf("vk: encode params: %w", err)
+		return nil, fmt.Errorf("vk: encode params: %w", err)
 	}
 
 	values.Set("v", cfg.Version)
@@ -109,7 +92,7 @@ func (c *Client) Call(ctx context.Context, method string, params, out any) error
 		nil,
 	)
 	if err != nil {
-		return fmt.Errorf("vk: build request: %w", err)
+		return nil, fmt.Errorf("vk: build request: %w", err)
 	}
 
 	req.Header.Set("Accept", "application/json")
@@ -120,26 +103,26 @@ func (c *Client) Call(ctx context.Context, method string, params, out any) error
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("vk: do request: %w", err)
+		return nil, fmt.Errorf("vk: do request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("vk: read response: %w", err)
+		return nil, fmt.Errorf("vk: read response: %w", err)
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("vk: unexpected http status %d: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("vk: unexpected http status %d", resp.StatusCode)
 	}
 
 	var respEnv responseEnvelope
 	if err := json.Unmarshal(body, &respEnv); err != nil {
-		return fmt.Errorf("vk: decode envelope: %w", err)
+		return nil, fmt.Errorf("vk: decode envelope: %w", err)
 	}
 
 	if respEnv.Error != nil {
-		return &VKError{
+		return nil, &VKError{
 			Code:             respEnv.Error.Code,
 			Message:          respEnv.Error.Message,
 			CaptchaSID:       respEnv.Error.CaptchaSID,
@@ -147,6 +130,15 @@ func (c *Client) Call(ctx context.Context, method string, params, out any) error
 			RedirectURI:      respEnv.Error.RedirectURI,
 			ConfirmationText: respEnv.Error.ConfirmationText,
 		}
+	}
+
+	return &respEnv, nil
+}
+
+func (c *Client) Call(ctx context.Context, method string, params, out any) error {
+	respEnv, err := c.doRequest(ctx, method, params)
+	if err != nil {
+		return err
 	}
 
 	if out == nil || len(respEnv.Response) == 0 {
@@ -161,70 +153,9 @@ func (c *Client) Call(ctx context.Context, method string, params, out any) error
 }
 
 func (c *Client) CallWithRawHandler(ctx context.Context, method string, params any, handler func(json.RawMessage) error) error {
-	cfg := c.transportConfig()
-
-	values, err := transport.EncodeValues(params)
+	respEnv, err := c.doRequest(ctx, method, params)
 	if err != nil {
-		return fmt.Errorf("vk: encode params: %w", err)
-	}
-
-	values.Set("v", cfg.Version)
-
-	if cfg.Lang != "" {
-		values.Set("lang", cfg.Lang)
-	}
-	if cfg.TestMode {
-		values.Set("test_mode", "1")
-	}
-	if cfg.Token != "" && cfg.TokenSource == transport.TokenInParams {
-		values.Set("access_token", cfg.Token)
-	}
-
-	req, err := http.NewRequestWithContext(
-		ctx,
-		http.MethodPost,
-		cfg.BaseURL+method+"?"+values.Encode(),
-		nil,
-	)
-	if err != nil {
-		return fmt.Errorf("vk: build request: %w", err)
-	}
-
-	req.Header.Set("Accept", "application/json")
-
-	if cfg.Token != "" && cfg.TokenSource == transport.TokenInHeader {
-		req.Header.Set("Authorization", "Bearer "+cfg.Token)
-	}
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("vk: do request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("vk: read response: %w", err)
-	}
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("vk: unexpected http status %d: %s", resp.StatusCode, string(body))
-	}
-
-	var respEnv responseEnvelope
-	if err := json.Unmarshal(body, &respEnv); err != nil {
-		return fmt.Errorf("vk: decode envelope: %w", err)
-	}
-
-	if respEnv.Error != nil {
-		return &VKError{
-			Code:             respEnv.Error.Code,
-			Message:          respEnv.Error.Message,
-			CaptchaSID:       respEnv.Error.CaptchaSID,
-			CaptchaImg:       respEnv.Error.CaptchaImg,
-			RedirectURI:      respEnv.Error.RedirectURI,
-			ConfirmationText: respEnv.Error.ConfirmationText,
-		}
+		return err
 	}
 
 	if handler == nil || len(respEnv.Response) == 0 {
