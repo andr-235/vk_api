@@ -45,3 +45,19 @@ func DeleteAddress(ctx context.Context, c *vk.Client, params DeleteAddressParams
 	}
 	return out == 1, nil
 }
+
+func DeleteCallbackServer(ctx context.Context, c *vk.Client, params DeleteCallbackServerParams) (bool, error) {
+	var out int
+	if err := c.Call(ctx, "groups.deleteCallbackServer", params, &out); err != nil {
+		return false, err
+	}
+	return out == 1, nil
+}
+
+func DisableOnline(ctx context.Context, c *vk.Client, params DisableOnlineParams) (bool, error) {
+	var out int
+	if err := c.Call(ctx, "groups.disableOnline", params, &out); err != nil {
+		return false, err
+	}
+	return out == 1, nil
+}

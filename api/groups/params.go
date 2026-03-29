@@ -42,3 +42,12 @@ type DeleteAddressParams struct {
 	GroupID    int `url:"group_id,omitempty"`
 	AddressID  int `url:"address_id,omitempty"`
 }
+
+type DeleteCallbackServerParams struct {
+	GroupID  int `url:"group_id,omitempty"`
+	ServerID int `url:"server_id,omitempty"`
+}
+
+type DisableOnlineParams struct {
+	GroupID  int `url:"group_id,omitempty"`
+}
