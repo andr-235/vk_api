@@ -15,10 +15,51 @@ const (
 	GetAddressesFieldCountry = "country"
 )
 
+// Значения для параметра fields в методе GetByID
+// Полный список полей: https://dev.vk.com/ru/method/groups.getById
+const (
+	GetByIDFieldActivity          = "activity"
+	GetByIDFieldBanInfo           = "ban_info"
+	GetByIDFieldCanPost           = "can_post"
+	GetByIDFieldCanSeeAllPosts    = "can_see_all_posts"
+	GetByIDFieldCity              = "city"
+	GetByIDFieldContacts          = "contacts"
+	GetByIDFieldCounters          = "counters"
+	GetByIDFieldCountry           = "country"
+	GetByIDFieldCover             = "cover"
+	GetByIDFieldDescription       = "description"
+	GetByIDFieldFinishDate        = "finish_date"
+	GetByIDFieldFixedPost         = "fixed_post"
+	GetByIDFieldLinks             = "links"
+	GetByIDFieldMarket            = "market"
+	GetByIDFieldMembersCount      = "members_count"
+	GetByIDFieldPlace             = "place"
+	GetByIDFieldSite              = "site"
+	GetByIDFieldStartDate         = "start_date"
+	GetByIDFieldStatus            = "status"
+	GetByIDFieldVerified          = "verified"
+	GetByIDFieldWikiPage          = "wiki_page"
+	GetByIDFieldType              = "type"
+	GetByIDFieldIsClosed          = "is_closed"
+	GetByIDFieldIsAdmin           = "is_admin"
+	GetByIDFieldIsMember          = "is_member"
+	GetByIDFieldIsAdvertiser      = "is_advertiser"
+	GetByIDFieldPhoto50           = "photo_50"
+	GetByIDFieldPhoto100          = "photo_100"
+	GetByIDFieldPhoto200          = "photo_200"
+	GetByIDFieldScreenName        = "screen_name"
+	GetByIDFieldName              = "name"
+)
+
+// GetByIDParams параметры метода groups.getById
+// https://dev.vk.com/ru/method/groups.getById
 type GetByIDParams struct {
+	// GroupIDs — идентификаторы или короткие имена сообществ (макс. 500)
 	GroupIDs []string `url:"group_ids,comma,omitempty"`
-	GroupID  string   `url:"group_id,omitempty"`
-	Fields   []string `url:"fields,comma,omitempty"`
+	// GroupID — идентификатор или короткое имя сообщества
+	GroupID string `url:"group_id,omitempty"`
+	// Fields — список дополнительных полей
+	Fields []string `url:"fields,comma,omitempty"`
 }
 
 // Validate проверяет валидность параметров метода GetByID

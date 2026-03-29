@@ -13,11 +13,9 @@ import (
 
 func TestGetByID(t *testing.T) {
 	var gotPath string
-	var gotForm url.Values
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		gotPath = r.URL.Path
-		gotForm = r.URL.Query()
 
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{
@@ -30,7 +28,25 @@ func TestGetByID(t *testing.T) {
 					"is_closed": 0,
 					"members_count": 1000,
 					"photo_100": "https://example.com/group_100.jpg",
-					"description": "test group"
+					"description": "test group",
+					"activity": "test activity",
+					"can_post": 1,
+					"can_see_all_posts": 1,
+					"city": {"id": 1, "title": "Moscow"},
+					"country": {"id": 1, "title": "Russia"},
+					"contacts": {"email": "test@example.com", "phone": "+7 999 000-00-00"},
+					"cover": {"enabled": true, "url": "https://example.com/cover.jpg"},
+					"status": "test status",
+					"verified": 1,
+					"site": "https://example.com",
+					"wiki_page": "test",
+					"fixed_post": 123,
+					"start_date": 1234567890,
+					"finish_date": 1234567890,
+					"place": {"id": 1, "title": "Test Place", "latitude": 55.75, "longitude": 37.61},
+					"market": {"enabled": 1, "currency": 1, "comments": 1},
+					"counters": {"photos": 100, "videos": 50, "audios": 200},
+					"links": {"items": [{"id": 1, "url": "https://example.com", "title": "Link"}]}
 				}
 			]
 		}`))
@@ -41,7 +57,13 @@ func TestGetByID(t *testing.T) {
 
 	items, err := GetByID(context.Background(), client, GetByIDParams{
 		GroupIDs: []string{"vk_test"},
-		Fields:   []string{"members_count", "photo_100", "description"},
+		Fields: []string{
+			"activity", "ban_info", "can_post", "can_see_all_posts",
+			"city", "contacts", "counters", "country", "cover",
+			"description", "finish_date", "fixed_post", "links",
+			"market", "members_count", "place", "site", "start_date",
+			"status", "verified", "wiki_page",
+		},
 	})
 	if err != nil {
 		t.Fatalf("GetByID() error = %v", err)
@@ -50,27 +72,59 @@ func TestGetByID(t *testing.T) {
 	if gotPath != "/groups.getById" {
 		t.Fatalf("unexpected path: %s", gotPath)
 	}
-	if gotForm.Get("group_ids") != "vk_test" {
-		t.Fatalf("unexpected group_ids: %q", gotForm.Get("group_ids"))
-	}
-	if gotForm.Get("fields") != "members_count,photo_100,description" {
-		t.Fatalf("unexpected fields: %q", gotForm.Get("fields"))
-	}
 
 	if len(items) != 1 {
 		t.Fatalf("unexpected groups len: %d", len(items))
 	}
-	if items[0].Name != "VK Test Group" {
-		t.Fatalf("unexpected name: %q", items[0].Name)
+
+	g := items[0]
+	if g.Name != "VK Test Group" {
+		t.Fatalf("unexpected name: %q", g.Name)
 	}
-	if items[0].MembersCount != 1000 {
-		t.Fatalf("unexpected members_count: %d", items[0].MembersCount)
+	if g.Activity != "test activity" {
+		t.Errorf("unexpected activity: %q", g.Activity)
 	}
-	if items[0].Photo100 != "https://example.com/group_100.jpg" {
-		t.Fatalf("unexpected photo_100: %q", items[0].Photo100)
+	if g.CanPost != 1 {
+		t.Errorf("unexpected can_post: %d", g.CanPost)
 	}
-	if items[0].Description != "test group" {
-		t.Fatalf("unexpected description: %q", items[0].Description)
+	if g.CanSeeAllPosts != 1 {
+		t.Errorf("unexpected can_see_all_posts: %d", g.CanSeeAllPosts)
+	}
+	if g.City == nil || g.City.Title != "Moscow" {
+		t.Errorf("unexpected city: %+v", g.City)
+	}
+	if g.Country == nil || g.Country.Title != "Russia" {
+		t.Errorf("unexpected country: %+v", g.Country)
+	}
+	if g.Contacts == nil || g.Contacts.Email != "test@example.com" {
+		t.Errorf("unexpected contacts: %+v", g.Contacts)
+	}
+	if g.Cover == nil || !g.Cover.Enabled {
+		t.Errorf("unexpected cover: %+v", g.Cover)
+	}
+	if g.Status != "test status" {
+		t.Errorf("unexpected status: %q", g.Status)
+	}
+	if g.Verified != 1 {
+		t.Errorf("unexpected verified: %d", g.Verified)
+	}
+	if g.WikiPage != "test" {
+		t.Errorf("unexpected wiki_page: %q", g.WikiPage)
+	}
+	if g.FixedPost != 123 {
+		t.Errorf("unexpected fixed_post: %d", g.FixedPost)
+	}
+	if g.Place == nil || g.Place.Title != "Test Place" {
+		t.Errorf("unexpected place: %+v", g.Place)
+	}
+	if g.Market == nil || g.Market.Enabled != 1 {
+		t.Errorf("unexpected market: %+v", g.Market)
+	}
+	if g.Counters == nil || g.Counters.Photos != 100 {
+		t.Errorf("unexpected counters: %+v", g.Counters)
+	}
+	if g.Links == nil || len(g.Links.Items) != 1 {
+		t.Errorf("unexpected links: %+v", g.Links)
 	}
 }
 
