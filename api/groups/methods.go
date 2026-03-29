@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/pkg/client"
 )
 
-func GetByID(ctx context.Context, c vk.Caller, params GetByIDParams) ([]Group, error) {
+func GetByID(ctx context.Context, c client.Caller, params GetByIDParams) ([]Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("groups.GetByID: invalid params: %w", err)
 	}
@@ -18,7 +18,7 @@ func GetByID(ctx context.Context, c vk.Caller, params GetByIDParams) ([]Group, e
 	return out, nil
 }
 
-func GetMembers(ctx context.Context, c vk.Caller, params GetMembersParams) (*GetMembersResponse, error) {
+func GetMembers(ctx context.Context, c client.Caller, params GetMembersParams) (*GetMembersResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("groups.GetMembers: invalid params: %w", err)
 	}
@@ -29,7 +29,7 @@ func GetMembers(ctx context.Context, c vk.Caller, params GetMembersParams) (*Get
 	return &out, nil
 }
 
-func AddAddress(ctx context.Context, c vk.Caller, params AddAddressParams) (*Address, error) {
+func AddAddress(ctx context.Context, c client.Caller, params AddAddressParams) (*Address, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("groups.AddAddress: invalid params: %w", err)
 	}
@@ -40,7 +40,7 @@ func AddAddress(ctx context.Context, c vk.Caller, params AddAddressParams) (*Add
 	return &out, nil
 }
 
-func AddCallbackServer(ctx context.Context, c vk.Caller, params AddCallbackServerParams) (*AddCallbackServerResponse, error) {
+func AddCallbackServer(ctx context.Context, c client.Caller, params AddCallbackServerParams) (*AddCallbackServerResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("groups.AddCallbackServer: invalid params: %w", err)
 	}
@@ -51,7 +51,7 @@ func AddCallbackServer(ctx context.Context, c vk.Caller, params AddCallbackServe
 	return &out, nil
 }
 
-func DeleteAddress(ctx context.Context, c vk.Caller, params DeleteAddressParams) (bool, error) {
+func DeleteAddress(ctx context.Context, c client.Caller, params DeleteAddressParams) (bool, error) {
 	if err := params.Validate(); err != nil {
 		return false, fmt.Errorf("groups.DeleteAddress: invalid params: %w", err)
 	}
@@ -62,7 +62,7 @@ func DeleteAddress(ctx context.Context, c vk.Caller, params DeleteAddressParams)
 	return out == 1, nil
 }
 
-func DeleteCallbackServer(ctx context.Context, c vk.Caller, params DeleteCallbackServerParams) (bool, error) {
+func DeleteCallbackServer(ctx context.Context, c client.Caller, params DeleteCallbackServerParams) (bool, error) {
 	if err := params.Validate(); err != nil {
 		return false, fmt.Errorf("groups.DeleteCallbackServer: invalid params: %w", err)
 	}
@@ -73,7 +73,7 @@ func DeleteCallbackServer(ctx context.Context, c vk.Caller, params DeleteCallbac
 	return out == 1, nil
 }
 
-func DisableOnline(ctx context.Context, c vk.Caller, params DisableOnlineParams) (bool, error) {
+func DisableOnline(ctx context.Context, c client.Caller, params DisableOnlineParams) (bool, error) {
 	if err := params.Validate(); err != nil {
 		return false, fmt.Errorf("groups.DisableOnline: invalid params: %w", err)
 	}
@@ -84,7 +84,7 @@ func DisableOnline(ctx context.Context, c vk.Caller, params DisableOnlineParams)
 	return out == 1, nil
 }
 
-func EditAddress(ctx context.Context, c vk.Caller, params EditAddressParams) (*Address, error) {
+func EditAddress(ctx context.Context, c client.Caller, params EditAddressParams) (*Address, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("groups.EditAddress: invalid params: %w", err)
 	}
@@ -95,7 +95,7 @@ func EditAddress(ctx context.Context, c vk.Caller, params EditAddressParams) (*A
 	return &out, nil
 }
 
-func EditCallbackServer(ctx context.Context, c vk.Caller, params EditCallbackServerParams) (bool, error) {
+func EditCallbackServer(ctx context.Context, c client.Caller, params EditCallbackServerParams) (bool, error) {
 	if err := params.Validate(); err != nil {
 		return false, fmt.Errorf("groups.EditCallbackServer: invalid params: %w", err)
 	}
@@ -106,7 +106,7 @@ func EditCallbackServer(ctx context.Context, c vk.Caller, params EditCallbackSer
 	return out == 1, nil
 }
 
-func EnableOnline(ctx context.Context, c vk.Caller, params EnableOnlineParams) (bool, error) {
+func EnableOnline(ctx context.Context, c client.Caller, params EnableOnlineParams) (bool, error) {
 	if err := params.Validate(); err != nil {
 		return false, fmt.Errorf("groups.EnableOnline: invalid params: %w", err)
 	}
@@ -117,7 +117,7 @@ func EnableOnline(ctx context.Context, c vk.Caller, params EnableOnlineParams) (
 	return out == 1, nil
 }
 
-func Get(ctx context.Context, c vk.Caller, params GetParams) (*GetResponse, error) {
+func Get(ctx context.Context, c client.Caller, params GetParams) (*GetResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("groups.Get: invalid params: %w", err)
 	}
@@ -128,7 +128,7 @@ func Get(ctx context.Context, c vk.Caller, params GetParams) (*GetResponse, erro
 	return &out, nil
 }
 
-func GetAddresses(ctx context.Context, c vk.Caller, params GetAddressesParams) (*GetAddressesResponse, error) {
+func GetAddresses(ctx context.Context, c client.Caller, params GetAddressesParams) (*GetAddressesResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("groups.GetAddresses: invalid params: %w", err)
 	}
@@ -139,7 +139,7 @@ func GetAddresses(ctx context.Context, c vk.Caller, params GetAddressesParams) (
 	return &out, nil
 }
 
-func GetBanned(ctx context.Context, c vk.Caller, params GetBannedParams) (*GetBannedResponse, error) {
+func GetBanned(ctx context.Context, c client.Caller, params GetBannedParams) (*GetBannedResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("groups.GetBanned: invalid params: %w", err)
 	}

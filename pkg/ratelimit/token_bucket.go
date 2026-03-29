@@ -1,25 +1,10 @@
-package vk
+package ratelimit
 
 import (
 	"context"
-	"net/http"
 	"sync"
 	"time"
 )
-
-// DefaultHTTPClient возвращает HTTP-клиент с оптимальными настройками
-// для работы с VK API.
-func DefaultHTTPClient() *http.Client {
-	return &http.Client{
-		Timeout: 30 * time.Second,
-		Transport: &http.Transport{
-			MaxIdleConns:        100,
-			MaxIdleConnsPerHost: 10,
-			IdleConnTimeout:     90 * time.Second,
-			DisableCompression:  false,
-		},
-	}
-}
 
 // TokenBucketRateLimiter реализует алгоритм token bucket для rate limiting.
 // Потокобезопасен.
@@ -43,7 +28,6 @@ func NewTokenBucketRateLimiter(rate float64) *TokenBucketRateLimiter {
 }
 
 // Wait блокирует выполнение до получения токена.
-// Возвращает ctx.Err() если контекст отменён.
 func (r *TokenBucketRateLimiter) Wait(ctx context.Context) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -72,17 +56,4 @@ func (r *TokenBucketRateLimiter) Wait(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// NoOpRateLimiter — rate limiter без ограничений.
-type NoOpRateLimiter struct{}
-
-// Wait всегда возвращает nil без задержки.
-func (r *NoOpRateLimiter) Wait(ctx context.Context) error {
-	return nil
-}
-
-// NewNoOpRateLimiter создаёт rate limiter без ограничений.
-func NewNoOpRateLimiter() *NoOpRateLimiter {
-	return &NoOpRateLimiter{}
 }

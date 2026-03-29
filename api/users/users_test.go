@@ -7,7 +7,8 @@ import (
 	"net/url"
 	"testing"
 
-	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/pkg/client"
+	"github.com/andr-235/vk_api/pkg/config"
 )
 
 func TestGet(t *testing.T) {
@@ -34,7 +35,7 @@ func TestGet(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := vk.New(vk.WithBaseURL(srv.URL))
+	client := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	users, err := Get(context.Background(), client, GetParams{
 		UserIDs: []string{"743784474"},
@@ -92,7 +93,7 @@ func TestGet_WithScreenName(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := vk.New(vk.WithBaseURL(srv.URL))
+	client := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	users, err := Get(context.Background(), client, GetParams{
 		UserIDs: []string{"durov"},
@@ -151,7 +152,7 @@ func TestGetFollowers(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := vk.New(vk.WithBaseURL(srv.URL))
+	client := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	resp, err := GetFollowers(context.Background(), client, GetFollowersParams{
 		UserID:   1,
@@ -227,7 +228,7 @@ func TestGetSubscriptions(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := vk.New(vk.WithBaseURL(srv.URL))
+	client := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	resp, err := GetSubscriptions(context.Background(), client, GetSubscriptionsParams{
 		UserID: 1,
@@ -302,7 +303,7 @@ func TestGetSubscriptionsExtended(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := vk.New(vk.WithBaseURL(srv.URL))
+	client := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	resp, err := GetSubscriptionsExtended(context.Background(), client, GetSubscriptionsParams{
 		UserID: 1,
@@ -389,7 +390,7 @@ func TestSearch(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := vk.New(vk.WithBaseURL(srv.URL))
+	client := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	resp, err := Search(context.Background(), client, SearchParams{
 		Q:        "Вася Бабич",

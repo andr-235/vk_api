@@ -1,8 +1,8 @@
 package groups
 
-import vk "github.com/andr-235/vk_api"
+import "github.com/andr-235/vk_api/pkg/client"
 
-type GetMembersResponse = vk.ListResponse[MemberRef]
+type GetMembersResponse = client.ListResponse[MemberRef]
 
 type Address struct {
 	ID                int         `json:"id"`
@@ -55,9 +55,9 @@ type AddCallbackServerResponse struct {
 	ServerID int `json:"server_id"`
 }
 
-type GetResponse = vk.ListResponse[Group]
+type GetResponse = client.ListResponse[Group]
 
-type GetAddressesResponse = vk.ListResponse[Address]
+type GetAddressesResponse = client.ListResponse[Address]
 
 type GetBannedResponse struct {
 	Count int          `json:"count"`

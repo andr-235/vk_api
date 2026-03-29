@@ -7,7 +7,8 @@ import (
 	"net/url"
 	"testing"
 
-	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/pkg/client"
+	"github.com/andr-235/vk_api/pkg/config"
 )
 
 func TestMessagesSend(t *testing.T) {
@@ -23,7 +24,7 @@ func TestMessagesSend(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := vk.New(vk.WithBaseURL(srv.URL))
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	messageID, err := Send(context.Background(), c, MessagesSendParams{
 		UserID:   1,

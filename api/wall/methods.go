@@ -3,10 +3,10 @@ package wall
 import (
 	"context"
 
-	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/pkg/client"
 )
 
-func Get(ctx context.Context, c vk.Caller, params WallGetParams) (*WallGetResponse, error) {
+func Get(ctx context.Context, c client.Caller, params WallGetParams) (*WallGetResponse, error) {
 	var out WallGetResponse
 	if err := c.Call(ctx, "wall.get", params, &out); err != nil {
 		return nil, err

@@ -6,7 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/pkg/client"
+	"github.com/andr-235/vk_api/pkg/config"
+	"github.com/andr-235/vk_api/pkg/transport"
 )
 
 func TestGet(t *testing.T) {
@@ -59,10 +61,11 @@ func TestGet(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := vk.New(
-		vk.WithBaseURL(server.URL+"/"),
-		vk.WithToken("test-token"),
-		vk.WithVersion("5.199"),
+	client := client.New(
+		config.DefaultConfig(),
+		client.WithBaseURL(server.URL+"/"),
+		client.WithToken("test-token"),
+		client.WithVersion("5.199"),
 	)
 
 	resp, err := Get(context.Background(), client, WallGetParams{
@@ -121,10 +124,11 @@ func TestGet_APIError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := vk.New(
-		vk.WithBaseURL(server.URL+"/"),
-		vk.WithToken("test-token"),
-		vk.WithVersion("5.199"),
+	client := client.New(
+		config.DefaultConfig(),
+		client.WithBaseURL(server.URL+"/"),
+		client.WithToken("test-token"),
+		client.WithVersion("5.199"),
 	)
 
 	resp, err := Get(context.Background(), client, WallGetParams{
@@ -140,7 +144,7 @@ func TestGet_APIError(t *testing.T) {
 	}
 
 	// Проверяем, что это ошибка аутентификации
-	if !vk.IsAuth(err) {
+	if _, ok := err.(*transport.AuthError); !ok {
 		t.Fatalf("expected auth error, got: %T %v", err, err)
 	}
 }

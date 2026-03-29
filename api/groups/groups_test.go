@@ -7,7 +7,8 @@ import (
 	"net/url"
 	"testing"
 
-	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/pkg/client"
+	"github.com/andr-235/vk_api/pkg/config"
 )
 
 func TestGetByID(t *testing.T) {
@@ -36,7 +37,7 @@ func TestGetByID(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := vk.New(vk.WithBaseURL(srv.URL))
+	client := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	items, err := GetByID(context.Background(), client, GetByIDParams{
 		GroupIDs: []string{"vk_test"},
@@ -109,7 +110,7 @@ func TestGetMembers(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := vk.New(vk.WithBaseURL(srv.URL))
+	client := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
 
 	resp, err := GetMembers(context.Background(), client, GetMembersParams{
 		GroupID: "vk_test",

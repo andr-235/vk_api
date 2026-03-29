@@ -1,8 +1,8 @@
 package users
 
-import vk "github.com/andr-235/vk_api"
+import "github.com/andr-235/vk_api/pkg/client"
 
-type GetFollowersResponse = vk.ListResponse[Profile]
+type GetFollowersResponse = client.ListResponse[Profile]
 
 type SubscriptionIDs struct {
 	Count int   `json:"count"`
@@ -14,7 +14,7 @@ type GetSubscriptionsResponse struct {
 	Groups SubscriptionIDs `json:"groups"`
 }
 
-type GetSubscriptionsExtendedResponse = vk.ListResponse[SubscriptionItem]
+type GetSubscriptionsExtendedResponse = client.ListResponse[SubscriptionItem]
 
 type SubscriptionItem struct {
 	Type string `json:"type,omitempty"`
@@ -37,4 +37,4 @@ type SubscriptionItem struct {
 	MembersCount int `json:"members_count,omitempty"`
 }
 
-type SearchResponse = vk.ListResponse[User]
+type SearchResponse = client.ListResponse[User]

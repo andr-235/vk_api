@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 
-	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/pkg/client"
+	"github.com/andr-235/vk_api/pkg/config"
 	"github.com/andr-235/vk_api/api/groups"
 	"github.com/andr-235/vk_api/api/users"
 )
@@ -17,9 +18,9 @@ func main() {
 		log.Fatal("VK_TOKEN env variable is required")
 	}
 
-	client := vk.New(
-		vk.WithToken(token),
-		vk.WithVersion("5.199"),
+	client := client.New(
+		config.Config{Token: token},
+		client.WithVersion("5.199"),
 	)
 
 	resp, err := users.Get(context.Background(), client, users.GetParams{

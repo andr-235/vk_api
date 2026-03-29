@@ -5,7 +5,11 @@
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(mkdir *)",
-      "Bash(dir *)"
+      "Bash(dir *)",
+      "Bash(del *)",
+      "Bash(rmdir *)",
+      "Bash(replace *)",
+      "Bash(set-content *)"
     ]
   },
   "$version": 3

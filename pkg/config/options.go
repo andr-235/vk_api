@@ -1,6 +1,17 @@
-package vk
+package config
 
-// Option конфигурирует Client.
+// TokenSource определяет способ передачи токена в VK API.
+type TokenSource int
+
+const (
+	// TokenInParams передаёт токен в параметрах запроса (access_token).
+	TokenInParams TokenSource = iota
+
+	// TokenInHeader передаёт токен в заголовке Authorization.
+	TokenInHeader
+)
+
+// Option конфигурирует Config.
 type Option func(*Config)
 
 // WithToken устанавливает токен доступа.
@@ -28,17 +39,7 @@ func WithBaseURL(baseURL string) Option {
 	return func(c *Config) { c.BaseURL = baseURL }
 }
 
-// WithHTTPClient устанавливает кастомный HTTP-клиент.
-func WithHTTPClient(hc Doer) Option {
-	return func(c *Config) { c.HTTPClient = hc }
-}
-
 // WithTokenSource устанавливает способ передачи токена.
 func WithTokenSource(src TokenSource) Option {
 	return func(c *Config) { c.TokenSource = src }
-}
-
-// WithRateLimiter устанавливает ограничитель частоты запросов.
-func WithRateLimiter(limiter RateLimiter) Option {
-	return func(c *Config) { c.RateLimiter = limiter }
 }

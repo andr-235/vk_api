@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	vk "github.com/andr-235/vk_api"
+	"github.com/andr-235/vk_api/pkg/client"
 )
 
 type MessagesSendParams struct {
@@ -28,7 +28,7 @@ func (p MessagesSendParams) Validate() error {
 	return nil
 }
 
-func Send(ctx context.Context, c vk.Caller, params MessagesSendParams) (int, error) {
+func Send(ctx context.Context, c client.Caller, params MessagesSendParams) (int, error) {
 	if err := params.Validate(); err != nil {
 		return 0, fmt.Errorf("messages.Send: invalid params: %w", err)
 	}

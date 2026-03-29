@@ -1,5 +1,5 @@
 package wall
 
-import vk "github.com/andr-235/vk_api"
+import "github.com/andr-235/vk_api/pkg/client"
 
-type WallGetResponse = vk.ListResponse[WallPost]
+type WallGetResponse = client.ListResponse[WallPost]
