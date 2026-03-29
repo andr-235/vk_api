@@ -1,5 +1,11 @@
 package groups
 
+import "errors"
+
+const (
+	GetCountMax = 1000
+)
+
 type GetByIDParams struct {
 	GroupIDs []string `url:"group_ids,comma,omitempty"`
 	GroupID  string   `url:"group_id,omitempty"`
@@ -68,3 +74,73 @@ type EditAddressParams struct {
 	Timetable         string `url:"timetable,omitempty"`
 	IsMainAddress     bool   `url:"is_main_address,omitempty"`
 }
+
+type EditCallbackServerParams struct {
+	GroupID    int    `url:"group_id,omitempty"`
+	ServerID   int    `url:"server_id,omitempty"`
+	URL        string `url:"url,omitempty"`
+	Title      string `url:"title,omitempty"`
+	SecretKey  string `url:"secret_key,omitempty"`
+}
+
+type EnableOnlineParams struct {
+	GroupID  int `url:"group_id,omitempty"`
+}
+
+type GetParams struct {
+	UserID   int      `url:"user_id,omitempty"`
+	Extended bool     `url:"extended,omitempty"`
+	Filter   []string `url:"filter,comma,omitempty"`
+	Fields   []string `url:"fields,comma,omitempty"`
+	Offset   int      `url:"offset,omitempty"`
+	Count    int      `url:"count,omitempty"`
+}
+
+// Validate проверяает валидность параметров метода Get
+func (p GetParams) Validate() error {
+	if p.Count > GetCountMax {
+		return errors.New("count не может превышать 1000")
+	}
+	if p.Count < 0 {
+		return errors.New("count не может быть отрицательным")
+	}
+	if p.Offset < 0 {
+		return errors.New("offset не может быть отрицательным")
+	}
+	return nil
+}
+
+// Значения для параметра filter в методе Get
+const (
+	FilterAdmin      = "admin"
+	FilterEditor     = "editor"
+	FilterModer      = "moder"
+	FilterAdvertiser = "advertiser"
+	FilterGroups     = "groups"
+	FilterPublics    = "publics"
+	FilterEvents     = "events"
+	FilterHasAddress = "hasAddress"
+)
+
+// Значения для параметра fields в методе Get
+const (
+	FieldActivity         = "activity"
+	FieldCanCreateTopic   = "can_create_topic"
+	FieldCanPost          = "can_post"
+	FieldCanSeeAllPosts   = "can_see_all_posts"
+	FieldCity             = "city"
+	FieldContacts         = "contacts"
+	FieldCounters         = "counters"
+	FieldCountry          = "country"
+	FieldDescription      = "description"
+	FieldFinishDate       = "finish_date"
+	FieldFixedPost        = "fixed_post"
+	FieldLinks            = "links"
+	FieldMembersCount     = "members_count"
+	FieldPlace            = "place"
+	FieldSite             = "site"
+	FieldStartDate        = "start_date"
+	FieldStatus           = "status"
+	FieldVerified         = "verified"
+	FieldWikiPage         = "wiki_page"
+)

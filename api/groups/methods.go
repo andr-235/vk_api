@@ -69,3 +69,27 @@ func EditAddress(ctx context.Context, c *vk.Client, params EditAddressParams) (*
 	}
 	return &out, nil
 }
+
+func EditCallbackServer(ctx context.Context, c *vk.Client, params EditCallbackServerParams) (bool, error) {
+	var out int
+	if err := c.Call(ctx, "groups.editCallbackServer", params, &out); err != nil {
+		return false, err
+	}
+	return out == 1, nil
+}
+
+func EnableOnline(ctx context.Context, c *vk.Client, params EnableOnlineParams) (bool, error) {
+	var out int
+	if err := c.Call(ctx, "groups.enableOnline", params, &out); err != nil {
+		return false, err
+	}
+	return out == 1, nil
+}
+
+func Get(ctx context.Context, c *vk.Client, params GetParams) (*GetResponse, error) {
+	var out GetResponse
+	if err := c.Call(ctx, "groups.get", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}

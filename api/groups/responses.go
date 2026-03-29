@@ -40,3 +40,8 @@ type MemberRef struct {
 type AddCallbackServerResponse struct {
 	ServerID int `json:"server_id"`
 }
+
+type GetResponse struct {
+	Count int     `json:"count"`
+	Items []Group `json:"items"`
+}
