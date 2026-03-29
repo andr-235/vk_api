@@ -93,3 +93,11 @@ func Get(ctx context.Context, c *vk.Client, params GetParams) (*GetResponse, err
 	}
 	return &out, nil
 }
+
+func GetAddresses(ctx context.Context, c *vk.Client, params GetAddressesParams) (*GetAddressesResponse, error) {
+	var out GetAddressesResponse
+	if err := c.Call(ctx, "groups.getAddresses", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}

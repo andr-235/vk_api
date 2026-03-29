@@ -1,9 +1,18 @@
 package groups
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	GetCountMax = 1000
+)
+
+// Значения для параметра fields в методе GetAddresses
+const (
+	AddressFieldCity    = "city"
+	AddressFieldCountry = "country"
 )
 
 type GetByIDParams struct {
@@ -144,3 +153,48 @@ const (
 	FieldVerified         = "verified"
 	FieldWikiPage         = "wiki_page"
 )
+
+type GetAddressesParams struct {
+	GroupID     int    `url:"group_id,omitempty"`
+	AddressIDs  []int  `url:"address_ids,comma,omitempty"`
+	Latitude    string `url:"latitude,omitempty"`
+	Longitude   string `url:"longitude,omitempty"`
+	Offset      int    `url:"offset,omitempty"`
+	Count       int    `url:"count,omitempty"`
+	Fields      []string `url:"fields,comma,omitempty"`
+}
+
+// Validate проверяет валидность параметров метода GetAddresses
+func (p GetAddressesParams) Validate() error {
+	if p.GroupID <= 0 {
+		return errors.New("group_id обязателен и должен быть положительным")
+	}
+	if p.Count < 0 {
+		return errors.New("count не может быть отрицательным")
+	}
+	if p.Offset < 0 {
+		return errors.New("offset не может быть отрицательным")
+	}
+	if p.Latitude != "" {
+		lat := parseFloat(p.Latitude)
+		if lat < -90 || lat > 90 {
+			return errors.New("latitude должен быть от -90 до 90")
+		}
+	}
+	if p.Longitude != "" {
+		lon := parseFloat(p.Longitude)
+		if lon < -180 || lon > 180 {
+			return errors.New("longitude должен быть от -180 до 180")
+		}
+	}
+	return nil
+}
+
+func parseFloat(s string) float64 {
+	var result float64
+	_, err := fmt.Sscanf(s, "%f", &result)
+	if err != nil {
+		return 0
+	}
+	return result
+}
