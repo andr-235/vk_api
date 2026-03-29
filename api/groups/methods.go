@@ -37,3 +37,11 @@ func AddCallbackServer(ctx context.Context, c *vk.Client, params AddCallbackServ
 	}
 	return &out, nil
 }
+
+func DeleteAddress(ctx context.Context, c *vk.Client, params DeleteAddressParams) (bool, error) {
+	var out int
+	if err := c.Call(ctx, "groups.deleteAddress", params, &out); err != nil {
+		return false, err
+	}
+	return out == 1, nil
+}

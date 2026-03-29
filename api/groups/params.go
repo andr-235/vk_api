@@ -37,3 +37,8 @@ type AddCallbackServerParams struct {
 	Title       string `url:"title,omitempty"`
 	SecretKey   string `url:"secret_key,omitempty"`
 }
+
+type DeleteAddressParams struct {
+	GroupID    int `url:"group_id,omitempty"`
+	AddressID  int `url:"address_id,omitempty"`
+}
