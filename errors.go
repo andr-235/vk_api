@@ -3,8 +3,6 @@ package vk
 import (
 	"errors"
 	"fmt"
-
-	"github.com/andr-235/vk_api/internal/transport"
 )
 
 const (
@@ -105,28 +103,4 @@ func AsVKError(err error) (*VKError, bool) {
 		return vkErr, true
 	}
 	return nil, false
-}
-
-func newVKError(src *transport.APIError) *VKError {
-	if src == nil {
-		return nil
-	}
-
-	params := make([]RequestParam, 0, len(src.RequestParams))
-	for _, p := range src.RequestParams {
-		params = append(params, RequestParam{
-			Key:   p.Key,
-			Value: p.Value,
-		})
-	}
-
-	return &VKError{
-		Code:             src.Code,
-		Message:          src.Message,
-		RequestParams:    params,
-		CaptchaSID:       src.CaptchaSID,
-		CaptchaImg:       src.CaptchaImg,
-		RedirectURI:      src.RedirectURI,
-		ConfirmationText: src.ConfirmationText,
-	}
 }

@@ -1,6 +1,10 @@
-package vk
+package messages
 
-import "context"
+import (
+	"context"
+
+	vk "github.com/andr-235/vk_api"
+)
 
 type MessagesSendParams struct {
 	UserID   int    `url:"user_id,omitempty"`
@@ -11,7 +15,7 @@ type MessagesSendParams struct {
 	Message  string `url:"message,omitempty"`
 }
 
-func (c *Client) MessagesSend(ctx context.Context, params MessagesSendParams) (int, error) {
+func Send(ctx context.Context, c *vk.Client, params MessagesSendParams) (int, error) {
 	var messageID int
 	if err := c.Call(ctx, "messages.send", params, &messageID); err != nil {
 		return 0, err

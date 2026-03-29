@@ -1,4 +1,4 @@
-package vk
+package messages
 
 import (
 	"context"
@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+
+	vk "github.com/andr-235/vk_api"
 )
 
 func TestMessagesSend(t *testing.T) {
@@ -21,15 +23,15 @@ func TestMessagesSend(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := New(WithBaseURL(srv.URL))
+	c := vk.New(vk.WithBaseURL(srv.URL))
 
-	messageID, err := c.MessagesSend(context.Background(), MessagesSendParams{
+	messageID, err := Send(context.Background(), c, MessagesSendParams{
 		UserID:   1,
 		RandomID: 42,
 		Message:  "hello",
 	})
 	if err != nil {
-		t.Fatalf("MessagesSend() error = %v", err)
+		t.Fatalf("Send() error = %v", err)
 	}
 
 	if gotPath != "/messages.send" {

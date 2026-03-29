@@ -65,7 +65,7 @@ func TestGet(t *testing.T) {
 		vk.WithVersion("5.199"),
 	)
 
-	resp, err := Get(context.Background(), client, GetParams{
+	resp, err := Get(context.Background(), client, WallGetParams{
 		OwnerID: 1,
 		Offset:  5,
 		Count:   10,
@@ -127,7 +127,7 @@ func TestGet_APIError(t *testing.T) {
 		vk.WithVersion("5.199"),
 	)
 
-	resp, err := Get(context.Background(), client, GetParams{
+	resp, err := Get(context.Background(), client, WallGetParams{
 		OwnerID: 1,
 	})
 

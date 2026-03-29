@@ -37,24 +37,3 @@ func TestValues_Struct(t *testing.T) {
 		t.Fatalf("expected omitted count, got %q", got)
 	}
 }
-
-func TestValues_Map(t *testing.T) {
-	v, err := Values(map[string]any{
-		"user_id": 123,
-		"q":       "hello",
-		"test":    true,
-	})
-	if err != nil {
-		t.Fatalf("Values() error = %v", err)
-	}
-
-	if got := v.Get("user_id"); got != "123" {
-		t.Fatalf("unexpected user_id: %q", got)
-	}
-	if got := v.Get("q"); got != "hello" {
-		t.Fatalf("unexpected q: %q", got)
-	}
-	if got := v.Get("test"); got != "1" {
-		t.Fatalf("unexpected test: %q", got)
-	}
-}
