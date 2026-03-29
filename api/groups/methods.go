@@ -29,3 +29,11 @@ func AddAddress(ctx context.Context, c *vk.Client, params AddAddressParams) (*Ad
 	}
 	return &out, nil
 }
+
+func AddCallbackServer(ctx context.Context, c *vk.Client, params AddCallbackServerParams) (*AddCallbackServerResponse, error) {
+	var out AddCallbackServerResponse
+	if err := c.Call(ctx, "groups.addCallbackServer", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}

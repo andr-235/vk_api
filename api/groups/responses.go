@@ -36,3 +36,7 @@ type MemberRef struct {
 	Online int `json:"online,omitempty"`
 	Sex    int `json:"sex,omitempty"`
 }
+
+type AddCallbackServerResponse struct {
+	ServerID int `json:"server_id"`
+}
