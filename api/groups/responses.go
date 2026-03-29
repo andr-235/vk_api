@@ -81,3 +81,8 @@ type GetAddressesResponse struct {
 	Count int       `json:"count"`
 	Items []Address `json:"items"`
 }
+
+type GetBannedResponse struct {
+	Count int          `json:"count"`
+	Items []BannedItem `json:"items"`
+}

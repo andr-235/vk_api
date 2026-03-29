@@ -164,6 +164,14 @@ type GetAddressesParams struct {
 	Fields      []string `url:"fields,comma,omitempty"`
 }
 
+type GetBannedParams struct {
+	GroupID int      `url:"group_id,omitempty"`
+	Offset  int      `url:"offset,omitempty"`
+	Count   int      `url:"count,omitempty"`
+	Fields  []string `url:"fields,comma,omitempty"`
+	OwnerID int      `url:"owner_id,omitempty"`
+}
+
 // Validate проверяет валидность параметров метода GetAddresses
 func (p GetAddressesParams) Validate() error {
 	if p.GroupID <= 0 {

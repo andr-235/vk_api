@@ -101,3 +101,11 @@ func GetAddresses(ctx context.Context, c *vk.Client, params GetAddressesParams) 
 	}
 	return &out, nil
 }
+
+func GetBanned(ctx context.Context, c *vk.Client, params GetBannedParams) (*GetBannedResponse, error) {
+	var out GetBannedResponse
+	if err := c.Call(ctx, "groups.getBanned", params, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
