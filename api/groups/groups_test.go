@@ -165,3 +165,346 @@ func TestGetMembers(t *testing.T) {
 		t.Fatalf("unexpected sex: %d", resp.Items[1].Sex)
 	}
 }
+
+func TestGet(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"response": {
+				"count": 1,
+				"items": [{"id": 1, "name": "Test Group", "type": "group"}]
+			}
+		}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	resp, err := Get(context.Background(), c, GetParams{
+		UserID:   1,
+		Extended: true,
+		Filter:   []string{"admin"},
+		Fields:   []string{"activity"},
+		Offset:   0,
+		Count:    10,
+	})
+	if err != nil {
+		t.Fatalf("Get() error = %v", err)
+	}
+	if resp == nil || resp.Count != 1 {
+		t.Fatal("expected response with count=1")
+	}
+}
+
+func TestGetAddresses(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"response": {
+				"count": 1,
+				"items": [{
+					"id": 1,
+					"title": "Main Office",
+					"address": "Street 1",
+					"country_id": 1,
+					"city_id": 1,
+					"latitude": 55.75,
+					"longitude": 37.61,
+					"is_main_address": true
+				}]
+			}
+		}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	resp, err := GetAddresses(context.Background(), c, GetAddressesParams{
+		GroupID: 1,
+		Count:   10,
+		Fields:  []string{"city", "country"},
+	})
+	if err != nil {
+		t.Fatalf("GetAddresses() error = %v", err)
+	}
+	if resp == nil || resp.Count != 1 {
+		t.Fatal("expected response")
+	}
+}
+
+func TestGetBanned(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"response": {
+				"count": 1,
+				"items": [{
+					"type": "profile",
+					"profile": {"id": 123, "first_name": "Banned"},
+					"ban_info": {"admin_id": 1, "date": 1234567890, "reason": 1, "end_date": 0}
+				}]
+			}
+		}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	resp, err := GetBanned(context.Background(), c, GetBannedParams{
+		GroupID: 1,
+		Count:   10,
+	})
+	if err != nil {
+		t.Fatalf("GetBanned() error = %v", err)
+	}
+	if resp == nil || resp.Count != 1 {
+		t.Fatal("expected response")
+	}
+}
+
+func TestAddAddress(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"response": {
+				"id": 1,
+				"title": "New Office",
+				"address": "Street 2",
+				"country_id": 1,
+				"city_id": 1,
+				"is_main_address": false
+			}
+		}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	resp, err := AddAddress(context.Background(), c, AddAddressParams{
+		GroupID:       1,
+		Title:         "New Office",
+		Address:       "Street 2",
+		CountryID:     1,
+		CityID:        1,
+		IsMainAddress: false,
+	})
+	if err != nil {
+		t.Fatalf("AddAddress() error = %v", err)
+	}
+	if resp == nil || resp.Title != "New Office" {
+		t.Fatal("expected response")
+	}
+}
+
+func TestEditAddress(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{
+			"response": {
+				"id": 1,
+				"title": "Edited Office",
+				"address": "Street 3",
+				"is_main_address": true
+			}
+		}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	resp, err := EditAddress(context.Background(), c, EditAddressParams{
+		GroupID:   1,
+		AddressID: 1,
+		Title:     "Edited Office",
+		Address:   "Street 3",
+	})
+	if err != nil {
+		t.Fatalf("EditAddress() error = %v", err)
+	}
+	if resp == nil || resp.Title != "Edited Office" {
+		t.Fatal("expected response")
+	}
+}
+
+func TestDeleteAddress(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"response": 1}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	ok, err := DeleteAddress(context.Background(), c, DeleteAddressParams{
+		GroupID:   1,
+		AddressID: 1,
+	})
+	if err != nil {
+		t.Fatalf("DeleteAddress() error = %v", err)
+	}
+	if !ok {
+		t.Error("expected true")
+	}
+}
+
+func TestAddCallbackServer(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"response": {"server_id": 123}}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	resp, err := AddCallbackServer(context.Background(), c, AddCallbackServerParams{
+		GroupID:   1,
+		URL:       "https://example.com/callback",
+		Title:     "Test Server",
+		SecretKey: "secret",
+	})
+	if err != nil {
+		t.Fatalf("AddCallbackServer() error = %v", err)
+	}
+	if resp == nil || resp.ServerID != 123 {
+		t.Fatal("expected response with server_id=123")
+	}
+}
+
+func TestEditCallbackServer(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"response": 1}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	ok, err := EditCallbackServer(context.Background(), c, EditCallbackServerParams{
+		GroupID:   1,
+		ServerID:  123,
+		URL:       "https://new.example.com",
+		Title:     "New Title",
+		SecretKey: "new_secret",
+	})
+	if err != nil {
+		t.Fatalf("EditCallbackServer() error = %v", err)
+	}
+	if !ok {
+		t.Error("expected true")
+	}
+}
+
+func TestDeleteCallbackServer(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"response": 1}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	ok, err := DeleteCallbackServer(context.Background(), c, DeleteCallbackServerParams{
+		GroupID:  1,
+		ServerID: 123,
+	})
+	if err != nil {
+		t.Fatalf("DeleteCallbackServer() error = %v", err)
+	}
+	if !ok {
+		t.Error("expected true")
+	}
+}
+
+func TestDisableOnline(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"response": 1}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	ok, err := DisableOnline(context.Background(), c, DisableOnlineParams{GroupID: 1})
+	if err != nil {
+		t.Fatalf("DisableOnline() error = %v", err)
+	}
+	if !ok {
+		t.Error("expected true")
+	}
+}
+
+func TestEnableOnline(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"response": 1}`))
+	}))
+	defer srv.Close()
+
+	c := client.New(config.DefaultConfig(), client.WithBaseURL(srv.URL))
+
+	ok, err := EnableOnline(context.Background(), c, EnableOnlineParams{GroupID: 1})
+	if err != nil {
+		t.Fatalf("EnableOnline() error = %v", err)
+	}
+	if !ok {
+		t.Error("expected true")
+	}
+}
+
+func TestValidateParams(t *testing.T) {
+	t.Run("GetByIDParams valid", func(t *testing.T) {
+		p := GetByIDParams{GroupIDs: []string{"1"}}
+		if err := p.Validate(); err != nil {
+			t.Errorf("Validate() error = %v", err)
+		}
+	})
+
+	t.Run("GetByIDParams invalid", func(t *testing.T) {
+		p := GetByIDParams{}
+		if err := p.Validate(); err == nil {
+			t.Error("Validate() should return error")
+		}
+	})
+
+	t.Run("GetMembersParams valid", func(t *testing.T) {
+		p := GetMembersParams{GroupID: "1", Count: 10}
+		if err := p.Validate(); err != nil {
+			t.Errorf("Validate() error = %v", err)
+		}
+	})
+
+	t.Run("GetMembersParams invalid count", func(t *testing.T) {
+		p := GetMembersParams{GroupID: "1", Count: -1}
+		if err := p.Validate(); err == nil {
+			t.Error("Validate() should return error for negative count")
+		}
+	})
+
+	t.Run("AddAddressParams valid", func(t *testing.T) {
+		p := AddAddressParams{GroupID: 1, Title: "Test"}
+		if err := p.Validate(); err != nil {
+			t.Errorf("Validate() error = %v", err)
+		}
+	})
+
+	t.Run("AddAddressParams invalid", func(t *testing.T) {
+		p := AddAddressParams{}
+		if err := p.Validate(); err == nil {
+			t.Error("Validate() should return error")
+		}
+	})
+
+	t.Run("GetBannedParams valid", func(t *testing.T) {
+		p := GetBannedParams{GroupID: 1, Count: 10}
+		if err := p.Validate(); err != nil {
+			t.Errorf("Validate() error = %v", err)
+		}
+	})
+
+	t.Run("GetAddressesParams valid", func(t *testing.T) {
+		p := GetAddressesParams{GroupID: 1, Count: 10}
+		if err := p.Validate(); err != nil {
+			t.Errorf("Validate() error = %v", err)
+		}
+	})
+}
