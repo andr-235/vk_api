@@ -1,3 +1,15 @@
+// Package config предоставляет конфигурацию для VK API клиента.
+//
+// Пример использования:
+//
+//	cfg := config.DefaultConfig()
+//	cfg.Token = "your-token"
+//
+//	// или через builder
+//	cfg, err := config.NewBuilder().
+//		WithToken("token").
+//		WithVersion("5.199").
+//		Build()
 package config
 
 import (
@@ -41,6 +53,8 @@ func DefaultConfig() Config {
 }
 
 // Validate проверяет валидность конфигурации.
+//
+// Возвращает ConfigError если конфигурация невалидна.
 func (c *Config) Validate() error {
 	if c.Version == "" {
 		return &ConfigError{Field: "version", Message: "version is required"}
@@ -76,3 +90,14 @@ type ConfigError struct {
 func (e *ConfigError) Error() string {
 	return fmt.Sprintf("config: invalid %s: %s", e.Field, e.Message)
 }
+
+// TokenSource определяет способ передачи токена в VK API.
+type TokenSource int
+
+const (
+	// TokenInParams передаёт токен в параметрах запроса (access_token).
+	TokenInParams TokenSource = iota
+
+	// TokenInHeader передаёт токен в заголовке Authorization.
+	TokenInHeader
+)

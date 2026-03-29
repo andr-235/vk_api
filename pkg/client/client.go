@@ -1,3 +1,20 @@
+// Package client предоставляет основной клиент для взаимодействия с VK API.
+//
+// Клиент поддерживает:
+//   - Конфигурацию через pkg/config
+//   - HTTP транспорт через pkg/transport
+//   - Retry логику через pkg/retry
+//   - Middleware через pkg/middleware
+//   - Rate limiting через pkg/ratelimit
+//
+// Пример использования:
+//
+//	client := client.New(config.DefaultConfig(),
+//		client.WithToken("your-token"),
+//		client.WithRateLimiter(ratelimit.NewTokenBucketRateLimiter(3.0)),
+//	)
+//
+//	err := client.Call(ctx, "users.get", params, &users)
 package client
 
 import (
@@ -27,15 +44,21 @@ func initRequestIDCounter() {
 }
 
 // Caller определяет интерфейс для вызова методов VK API.
+//
+// Этот интерфейс позволяет мокировать клиент для тестирования.
 type Caller interface {
+	// Call вызывает метод VK API и декодирует ответ в out.
 	Call(ctx context.Context, method string, params, out any) error
+	// CallWithRawHandler вызывает метод VK API с обработчиком сырого ответа.
 	CallWithRawHandler(ctx context.Context, method string, params any, handler func(json.RawMessage) error) error
 }
 
 // ListResponse — универсальный ответ с коллекцией объектов.
+//
+// Используется для методов, возвращающих списки (друзья, подписчики, и т.д.).
 type ListResponse[T any] struct {
-	Count int `json:"count"`
-	Items []T `json:"items"`
+	Count int `json:"count"` // Общее количество объектов
+	Items []T `json:"items"` // Массив объектов
 }
 
 // Doer определяет интерфейс для выполнения HTTP-запросов.
@@ -43,6 +66,17 @@ type ListResponse[T any] struct {
 type Doer = transport.Doer
 
 // Client — основной клиент VK API.
+//
+// Потокобезопасен после создания. Все методы могут вызываться из разных горутин.
+//
+// Пример создания:
+//
+//	cfg := config.DefaultConfig()
+//	cfg.Token = "your-token"
+//	client := client.New(cfg,
+//		client.WithRateLimiter(ratelimit.NewTokenBucketRateLimiter(3.0)),
+//		client.WithRetryer(retry.NewSimpleRetryer(3, retry.DefaultPolicy())),
+//	)
 type Client struct {
 	config       config.Config
 	transport    *transport.Transport
@@ -54,6 +88,7 @@ type Client struct {
 // Option конфигурирует Client.
 type Option func(*options)
 
+// options содержит опции для создания Client.
 type options struct {
 	config       config.Config
 	interceptors middleware.InterceptorChain
@@ -63,6 +98,16 @@ type options struct {
 }
 
 // New создаёт новый Client с заданными опциями.
+//
+// Если конфигурация невалидна, функция паникует.
+// Для обработки ошибок используйте NewBuilder().Build().
+//
+// Пример:
+//
+//	client := client.New(config.DefaultConfig(),
+//		client.WithToken("token"),
+//		client.WithVersion("5.199"),
+//	)
 func New(cfg config.Config, opts ...Option) *Client {
 	opt := &options{
 		config:       cfg,
@@ -100,6 +145,15 @@ func New(cfg config.Config, opts ...Option) *Client {
 }
 
 // Call вызывает метод VK API и декодирует ответ в out.
+//
+// method — имя метода VK API (например, "users.get").
+// params — структура параметров с тегами `url:"name"`.
+// out — указатель на структуру или слайс для декодирования ответа.
+//
+// Пример:
+//
+//	var users []User
+//	err := client.Call(ctx, "users.get", params, &users)
 func (c *Client) Call(ctx context.Context, method string, params, out any) error {
 	return c.callWithRetry(ctx, method, params, func(ctx context.Context, values url.Values) error {
 		return c.transport.Call(ctx, method, values, out)
@@ -107,6 +161,14 @@ func (c *Client) Call(ctx context.Context, method string, params, out any) error
 }
 
 // CallWithRawHandler вызывает метод VK API с обработчиком сырого ответа.
+//
+// handler получает сырой JSON ответа и может обработать его самостоятельно.
+//
+// Пример:
+//
+//	err := client.CallWithRawHandler(ctx, "users.get", params, func(raw json.RawMessage) error {
+//		// кастомная обработка
+//	})
 func (c *Client) CallWithRawHandler(ctx context.Context, method string, params any, handler func(json.RawMessage) error) error {
 	return c.callWithRetry(ctx, method, params, func(ctx context.Context, values url.Values) error {
 		return c.transport.CallRaw(ctx, method, values, handler)

@@ -1,3 +1,4 @@
+// Package client предоставляет основной клиент для взаимодействия с VK API.
 package client
 
 import (
@@ -9,6 +10,14 @@ import (
 )
 
 // Builder предоставляет fluent API для создания клиента.
+//
+// Пример использования:
+//
+//	client, err := client.NewBuilder().
+//		WithToken("token").
+//		WithVersion("5.199").
+//		WithRateLimiter(ratelimit.NewTokenBucketRateLimiter(3.0)).
+//		Build()
 type Builder struct {
 	config       config.Config
 	interceptors []middleware.RequestInterceptor
@@ -88,6 +97,8 @@ func (b *Builder) WithHTTPClient(hc Doer) *Builder {
 }
 
 // Build создаёт новый Client.
+//
+// Возвращает ошибку, если конфигурация невалидна.
 func (b *Builder) Build() (*Client, error) {
 	if err := b.config.Validate(); err != nil {
 		return nil, err
@@ -119,6 +130,8 @@ func (b *Builder) Build() (*Client, error) {
 }
 
 // MustBuild создаёт Client или паникует при ошибке.
+//
+// Используйте, когда уверены в валидности конфигурации.
 func (b *Builder) MustBuild() *Client {
 	client, err := b.Build()
 	if err != nil {

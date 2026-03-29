@@ -1,6 +1,14 @@
+// Package config предоставляет конфигурацию для VK API клиента.
 package config
 
 // Builder предоставляет fluent API для создания конфигурации.
+//
+// Пример использования:
+//
+//	cfg, err := config.NewBuilder().
+//		WithToken("token").
+//		WithVersion("5.199").
+//		Build()
 type Builder struct {
 	config Config
 }
@@ -49,6 +57,8 @@ func (b *Builder) WithTokenSource(src TokenSource) *Builder {
 }
 
 // Build создаёт Config с заданной конфигурацией.
+//
+// Возвращает ошибку, если конфигурация невалидна.
 func (b *Builder) Build() (Config, error) {
 	cfg := b.config
 	if err := cfg.Validate(); err != nil {
@@ -59,6 +69,8 @@ func (b *Builder) Build() (Config, error) {
 }
 
 // MustBuild создаёт Config или паникует при ошибке.
+//
+// Используйте, когда уверены в валидности конфигурации.
 func (b *Builder) MustBuild() Config {
 	cfg, err := b.Build()
 	if err != nil {
