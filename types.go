@@ -46,3 +46,13 @@ type Coordinates struct {
 	Latitude  float64 `json:"latitude"`
 	Longitude float64 `json:"longitude"`
 }
+
+// TokenSource определяет способ передачи токена в VK API.
+type TokenSource int
+
+const (
+	// TokenInParams передаёт токен в параметрах запроса (access_token).
+	TokenInParams TokenSource = iota
+	// TokenInHeader передаёт токен в заголовке Authorization.
+	TokenInHeader
+)

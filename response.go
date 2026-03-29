@@ -4,10 +4,11 @@ import "encoding/json"
 
 type responseEnvelope struct {
 	Response json.RawMessage `json:"response"`
-	Error    *apiError       `json:"error"`
+	Error    *vkErrorEnvelope `json:"error"`
 }
 
-type apiError struct {
+// vkErrorEnvelope представляет ошибку VK API.
+type vkErrorEnvelope struct {
 	Code          int            `json:"error_code"`
 	Message       string         `json:"error_msg"`
 	RequestParams []RequestParam `json:"request_params,omitempty"`
@@ -18,3 +19,7 @@ type apiError struct {
 
 	ConfirmationText string `json:"confirmation_text,omitempty"`
 }
+
+// apiError — устаревшее имя, используйте vkErrorEnvelope.
+// Deprecated: используйте vkErrorEnvelope.
+type apiError = vkErrorEnvelope
